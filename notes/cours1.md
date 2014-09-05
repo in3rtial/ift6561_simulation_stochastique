@@ -120,8 +120,43 @@ PERT/CPM methods address this type of problems when the time values are exact.
 
 **Static reliability of multicomponent system**
 
+- communication networks, computer systems in banks, power plants, production systems, aircrafts, military devices, etc.
+- m components, which can be in state 0 (failed) or 1 (operational)
+- time plays no role as if 
+- This could mean that the system it sis observed at a fixed point in time
+
+- states::Vector{Bool}
+- working(states) -> system_operational::Bool
+- reliability = P(working(system)) = true
+- assume that the components are independent
+- possible to simulate the system and estimate average reliability if working(states) is simple enough
+    - usually presented in the form of a graph
+- real problem is evaluating unreliability (1 - reliability)
+    - this is know as rare event simulation
 
 
+**queueing system**
+
+- each station is a single-server queueing with potentially finite capacity
+- FIFO
+- processes sequentially t
+
+~~~
+    Let T 0 = 0 and D 0,0 = D 1,0 = 0;
+    For j = 2, . . . , m,
+    For i = −c j + 1, . . . , 0, let D j,i = 0;
+    For i = 1, . . . , N c ,
+    Generate A i from its distribution and let D 0,i = T i = T i−1 + A i ;
+    Let W i = B i = 0;
+    For j = 1, . . . , m,
+    Generate S j,i from its distribution;
+    Let D j,i = max[D j−1,i + S j,i , D j,i−1 + S j,i , D j+1,i−c j+1 ];
+    Let W j,i = max[0, D j,i−1 − D j−1,i ] and W i = W i + W j,i ;
+    Let B j,i = D j,i − D j−1,i − W j,i − S j,i and B i = B i + B j,i ;
+    Compute and return the averages
+    Wnc = (W 1 + · · · + W N c )/N c and B
+    Wnc = (B 1 + · · · + B N c )/N c
+~~~
 
 
 
