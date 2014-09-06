@@ -1,4 +1,4 @@
-# Cours 1
+# Chapter 1
 
 # Introduction
 
@@ -157,6 +157,139 @@ PERT/CPM methods address this type of problems when the time values are exact.
     Wnc = (W 1 + · · · + W N c )/N c and B
     Wnc = (B 1 + · · · + B N c )/N c
 ~~~
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1.2 Introductio nto random number generators (RNGs)
+
+
+### the concept
+
+
+The aim of the RNG is to imitate a sequence of independent random variables
+**uniformly distributed over the R(0, 1) interval**. This distribution
+can then be converted to other distributions (Poisson, exp, geom, ...).
+
+
+- real life RNG are usually deterministic algorithm that produce periodic seequences
+- well-designed ones simulate random variables well enough
+- physical (thermal noise) signals can also be used to acquire random numbers
+
+
+**states**: the RNG has a finite number of states it can fall into
+
+
+**transition function**: allows going from one state to another (different types and inner workings)
+
+
+**ouput function**: assigns to each state a real number betwenn 0 and 1
+
+
+**determinism**: from any starting state (seed), the RNG will transition in the exact same order
+
+
+Since the number of states is finite, the output sequence is periodic.
+The period length cannot exceed the number of states.
+The seed can be chosen randomly.
+
+
+The RNG can be viewed as an extensor of randomness, requiring a small input (seed) and going a
+long way with it... The output sequence is technically pseudorandom.
+
+
+For practical reasons, the RNG must never return 0 or 1, as it would create
+major fuckups when it's output is used to generate exponentials e.g. -ln(1 - x)
+
+
+In simulation context, the output sequence is assumed to be random.
+
+
+## linear congruential generators
+
+
+- simple, well-know RNG
+- probably too simple
+
+~~~
+
+    state at step n is an integer xn with transition function
+    xn = (a*xn-1 + c) mod m
+
+    m, a >0
+    m, a, c are integers
+
+    output(x, m) = x / m
+    strictly between 0 and 1 (never xn = 0)
+
+~~~
+
+~~~python
+
+    class lcg_rng(object):
+      def __init__(self, seed, a, m, c):
+        assert(a) > 0
+        assert(m) > 0
+        # every input must be an integer
+        assert(isinstance(seed, int))
+        assert(isinstance(a, int))
+        assert(isinstance(m, int))
+        assert(isinstance(c, int))
+        self.a = a
+        self.m = m
+        self.c = c
+        # map the seed to the state
+        self.state = seed % m
+
+      def yield_random(self):
+        # returns an output and transition state
+        previous_state = self.state
+        self.state = (self.a * self.state + self.c) % self.m
+        return(previous_state / self.m)
+
+    # the one given as example in the book
+    R = lcg_rng(10, 12, 101, 0)
+    print(R.yield_random) # 0.0990099
+    print(R.yield_random) # 0.1881188
+    print(R.yield_random) # 0.2574257
+    print(R.yield_random) # 0.0891089
+
+~~~
+
+
+## quality criteria
+
+- uniformity property:
+
+
+
+
+
+
 
 
 
