@@ -86,7 +86,7 @@ cons:
 - validation = verifying that the model is truly representative of modeled system
 
 Proper modeling and validation is really the hard part compared to programming and validating.
-Restricting a model by neglecting some aspects of it is an important part of building a model.
+Restricting a model byneglecting some aspects of it is an important part of building a model.
 
 
 ### Monte Carlo methods
@@ -185,10 +185,21 @@ PERT/CPM methods address this type of problems when the time values are exact.
 
 
 
-## 1.2 Introductio nto random number generators (RNGs)
+## 1.2 Introduction to random number generators (RNGs)
 
 
 ### the concept
+
+**Recurrence based pRNG**
+- G = (N, I, O)
+    - N = node
+    - I = edges of the form other -> node
+    - O = edges of the form node -> other
+- node represent unique state
+- indegree of node belongs [0.. number of nodes in the digraph]
+- outdegree = 1
+- G can be disconnected or not
+- the periodicity of G is the length of the shortest cyclic path
 
 
 The aim of the RNG is to imitate a sequence of independent random variables
@@ -196,7 +207,7 @@ The aim of the RNG is to imitate a sequence of independent random variables
 can then be converted to other distributions (Poisson, exp, geom, ...).
 
 
-- real life RNG are usually deterministic algorithm that produce periodic seequences
+- real life RNG are usually deterministic algorithm that produce periodic sequences
 - well-designed ones simulate random variables well enough
 - physical (thermal noise) signals can also be used to acquire random numbers
 
@@ -290,7 +301,10 @@ If this holds for n=0 and s>0, this holds for all n>0.
 Captures uniformity and independance.
 
 For every s>0, whenever 0 <= aj < bj <= 1 forall j
-P[aj <]
+P[a j ≤ U j ≤ b j for j = 0, . . . , s − 1] = (b 0 − a 0 ) · · · (b s−1 − a s−1 ).
+That is, the probability that the point (U 1 , . . . , U s ) falls in some rectangular
+box in the unit cube should be equal to the volume of that box, as illustrated
+here for s = 2:
 
 
 With paramtetric RNG, it is possible to get very bad performance based on parameters.
@@ -302,13 +316,45 @@ x−2 , x−1 , x0 ∈ {0, 1, ..., 4294967086}, not all 0
 y−2 , y−1 , y0 ∈ {0, 1, ..., 4294944442}, not all 0
 
 the state at step n
-sn = (x n−2 , x n−1 , x n , y n−2 , y n−1 , y n )
+sn = (xn−2 , xn−1 , xn , yn−2 , yn−1 , yn)
 
 
 the recurrence
-xn = (1403580x n−2 − 810728x n−3 ) mod 4294967087,
-yn = (527612y n−1 − 1370589y n−3 ) mod 4294944443,
-un = [(x n − y n ) mod 4294967087]/4294967087
+xn = (1403580xn−2 − 810728xn−3 ) mod 4294967087,
+yn = (527612yn−1 − 1370589yn−3 ) mod 4294944443,
+un = [(xn − yn ) mod 4294967087]/4294967087
+
+
+~~~python
+    class swb_rng(object):
+      """substract with borrow generator
+         (b, r, k) = (2 31 , 8, 48)"""
+      def __init__(self, seed, b, r, k):
+        """init"""
+        assert isinstance(b, int) and isinstance(r, int) and isinstance(k, int)
+        assert 0 < r < k
+        assert
+        self.b = b
+        self.r = r
+        self.k = k
+        self.state = seed
+
+      def rand(self):
+        """yields a number based on state and progress one state"""
+        xn = self.state[self.n
+
+~~~
+
+
+
+
+
+
+
+
+
+
+
 
 
 
