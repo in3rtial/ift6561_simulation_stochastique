@@ -283,11 +283,32 @@ In simulation context, the output sequence is assumed to be random.
 
 ## quality criteria
 
-- uniformity property:
+**uniformity property**: (0,1)^s = {(u1, ..., us): 0 < uj < 1 for each j}.
+Want to be uniform over the s-dimensional unit hypercube.
+
+If this holds for n=0 and s>0, this holds for all n>0.
+Captures uniformity and independance.
+
+For every s>0, whenever 0 <= aj < bj <= 1 forall j
+P[aj <]
 
 
+With paramtetric RNG, it is possible to get very bad performance based on parameters.
 
 
+**example 1.15**
+the initial state is composed of 6 integers:
+x−2 , x−1 , x0 ∈ {0, 1, ..., 4294967086}, not all 0
+y−2 , y−1 , y0 ∈ {0, 1, ..., 4294944442}, not all 0
+
+the state at step n
+sn = (x n−2 , x n−1 , x n , y n−2 , y n−1 , y n )
+
+
+the recurrence
+xn = (1403580x n−2 − 810728x n−3 ) mod 4294967087,
+yn = (527612y n−1 − 1370589y n−3 ) mod 4294944443,
+un = [(x n − y n ) mod 4294967087]/4294967087
 
 
 
