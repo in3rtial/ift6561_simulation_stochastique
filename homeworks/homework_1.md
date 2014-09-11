@@ -13,15 +13,15 @@ taking order into account?
 - the state space can be represented by a tree
     - starting with 52 nodes, then 51 for each of the 52...
     - e.g. if t = 3 : (3-permutations of 52) = 52 * 51 * 50
-- this is usually denoted as a factorial which stops at n - t + 1
-- 52! / (52 - t + 1)!
+- this is usually denoted as a factorial which stops at n - t 
+- 52! / (52 - t )!
 
 
 **without taking order into account (combinations)**
 - we want the total number of t-combinations of n
 - the intuition is the same as for the t-permutation
     - there are multiple repetitions in the permutations
-- 52! / (((52 - t + 1)!)* ( t!))
+- 52! / (((52 - t)!)* ( t!))
 
 
 (b) What is the minimal period length of the generator, and the minimal number
@@ -44,7 +44,7 @@ Let us restate the properties of a pseudorandom number generator:
 If "to make sure that every possibility can happen for the first t cards" means
 that every possible realization can happen, given every seed:
 
-- The simplest way would be to have 52! / (52 - t + 1)! states.
+- The simplest way would be to have 52! / (52 - t)! states.
 - These states can be encoded in ceiling(log2(number_of_states)) bits.
 
 
@@ -55,7 +55,7 @@ that every possible realization can happen, given every seed:
 However, if "to make sure that every possibility can happen for the first t cards"
 means that every possible realization can happen, given some some seed:
 
-- The simplest way would be to have 52! / (52 - t + 1)! states.
+- The simplest way would be to have 52! / (52 - t)! states.
 - These states can be encoded in ceiling(log2(number_of_states)) bits.
 
 - The shortest periodicity of such PRNG could be of 0
@@ -75,7 +75,7 @@ means that every possible realization can happen, given some some seed:
         ret *= i
       return ret
 
-    threshold = factorial(52) / factorial(52 - 52 + 1)
+    threshold = factorial(52) / factorial(52 - 52 )
 
     necessary_bits = 1
     while 2**necessary_bits < threshold:
@@ -118,7 +118,7 @@ what is the maximal value of t for which we can have all the possibilities?
     def number_of_states(t):
       """calculate the number of states needed for t"""
       assert t>0 and isinstance(t, int)
-      return stirling(52) / stirling(52 - t + 1)
+      return stirling(52) / stirling(52 - t )
 
     t = 1
     while number_of_states(t+1) < ((2**31)-2):
