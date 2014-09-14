@@ -1,13 +1,13 @@
-/* hypercube class used in exercise 1.2 */
+/* unit cube class used in exercise 1.2 */
 import java.util.TreeMap;
 
-public class Hypercube
+public class UnitCube
 {
   /* a 0,1 3d cube with 10^6 subcubes */
   private int[] array;
   private int arraySize;
 
-  public Hypercube()
+  public UnitCube()
   {
     arraySize = 1000000;
     array = new int[arraySize];
@@ -50,17 +50,17 @@ public class Hypercube
     return collisions;
   }
 
-  public int getEmpty()
+  public int getNumCollisions()
   {
     // returns the number of empty subcubes
-    int empty = 0;
+    int collisions = 0;
     for(int i = 0; i < arraySize; i++)
     {
-      if(array[i] == 0)
+      if(array[i] > 1)
       {
-        empty += 1;
+        collisions += (array[i] - 1);
       }
     }
-    return empty;
+    return collisions;
   }
 }

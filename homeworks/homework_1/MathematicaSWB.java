@@ -1,11 +1,12 @@
 import umontreal.iro.lecuyer.rng.RandomStreamBase;
-
+import java.math.BigInteger;
 
 public class MathematicaSWB extends RandomStreamBase {
    private final int r = 8;
    private final int s = 48;
    protected final double norm = 1.0 / (1L << 31); // 1 / 2^31
    private static final int MASK31 = 0x7fffffff; // Masque de 31 bits
+   private BigInteger state;
    // static final long serialVersionUID;
 
    private int[] X;
@@ -16,6 +17,7 @@ public class MathematicaSWB extends RandomStreamBase {
    // =======================================================================
 
    public MathematicaSWB() {
+      state = BigInteger.ZERO;
       X = new int[s];
 
       // Initialiser l'etat du generateur avec des valeurs arbitraires
@@ -42,7 +44,7 @@ public class MathematicaSWB extends RandomStreamBase {
 
    public double nextValue() {
       int v = X[m_j] - X[m_i] - m_c; // ne peut pas deborder
-
+      state = state.add(BigInteger.ONE);
       if (v < 0) {
          v &= MASK31; // equivalent a  v = v + 2^31
          m_c = 1;
@@ -59,7 +61,6 @@ public class MathematicaSWB extends RandomStreamBase {
       m_i++;
       if (m_i == s)
          m_i = 0;
-
       return v * norm;
    }
 
@@ -98,6 +99,13 @@ public class MathematicaSWB extends RandomStreamBase {
 
    //=======================================================================
 
+   public BigInteger getState()
+   {
+      return state;
+   }
+
+   //=======================================================================
+ 
    public static void main(String[] args) {
       double x;
       MathematicaSWB gen = new MathematicaSWB();
