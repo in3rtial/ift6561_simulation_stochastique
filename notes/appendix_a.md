@@ -61,3 +61,11 @@ This gives rise to technical subtleties studied by measure theory.
 When Ω = R, F is usually taken as the Borel σ-field B,
 defined as the smallest σ-field that contains all the intervals with rational end points.
 -
+
+
+
+
+## A.2 Integrals
+
+given 2 measurable spaces, a function f: s1 -> s2 is a measurable function if for each
+B 
