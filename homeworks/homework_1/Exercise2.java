@@ -2,14 +2,14 @@
 import umontreal.iro.lecuyer.rng.MRG32k3a;
 import umontreal.iro.lecuyer.rng.RandomStreamBase;
 
-public class exercise2
+public class Exercise2
 {
   /* (a) Implement the SWB generator of Example 1.16, whose parameters
   are (b, r, k) = (2^31, 8, 48), and real-valued output defined by u n = x2n /2^62 +
   x2n+1 /2^31 , and use it to generate three-dimensional points in [0, 1) 3 , defined by
   ui = (u[25i], u[25i+20], u[25i+24]) for i = 0, ..., m − 1, for m = 10^4.
 
-  Partition the unit cube into k = 10 6 subcubes by partitioning each axis into 100 equal intervals.
+  Partition the unit cube into k = 10^6 subcubes by partitioning each axis into 100 equal intervals.
   Number these subcubes from 0 to k − 1 (in any way), find the number of the
   subcube in which each point ui has fallen, and count the number C of collisions
   as in Example 1.6. Repeat this 10 times, to obtain 10 “independent” realizations
@@ -17,17 +17,25 @@ public class exercise2
   Example 1.6. You can do the latter comparison informally; there is no need to
   perform a formal statistical test. */
 
-  public exercise2()
+  public Exercise2()
   {
-    System.out.println("===========================================");
+    System.out.println("\n===========================================");
     System.out.println("Exercise 2 a)");
     a();
-    System.out.println("===========================================\n");
+    System.out.println("===========================================");
 
     System.out.println("Exercise 2 b)");
     b();
     System.out.println("===========================================\n");
   }
+
+  public static double expectedCollisions(int m, int k)
+  {
+    // expected number of collisions given a Poisson distribution of
+    // average m elements to place into k addresses
+    return (double) m*m/(2*k);
+  }
+
 
   public double[] getNextPoint(RandomStreamBase generator)
   {
@@ -44,8 +52,9 @@ public class exercise2
     return ret;
   }
 
-  public int[] a()
+  public int[] a(int number_of_experiments)
   {
+    assert number_of_experiments > 0;
     MathematicaSWB generator = new MathematicaSWB();
     int[] collisions = new int[10];
 
