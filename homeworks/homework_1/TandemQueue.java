@@ -1,7 +1,9 @@
 /* implementation of the tandem queue for exercise 4 */
 
-import umontreal.iro.lecuyer.stat.Tally;
+// import umontreal.iro.lecuyer.stats.Tally;
 import java.util.ArrayList;
+import umontreal.iro.lecuyer.rng.RandomStreamBase;
+
 
 /*
   NOTATION
@@ -28,10 +30,10 @@ import java.util.ArrayList;
 class TandemQueue
 {
   /* */
-  private int m; // the number of nodes in the system
-  private double[] u; // average processing time at node i
-  private int[] c; // maximum queue size at
-  private double lambda; // arrival rate of the clients
+  private final int m; // the number of nodes in the system
+  private final double[] u; // average processing time at node i
+  private final int[] c; // maximum queue size at
+  private final double lambda; // arrival rate of the clients
 
   public TandemQueue(int numberOfNodes,
                      double arrivalRate,  // arrival rate, follows exp law
@@ -51,11 +53,12 @@ class TandemQueue
   {
     // in this case, supposing that the number of arrivals and the number of
     // queues are not enormous, we can preallocate the random numbers in a 
-    assert number >= 0;
-    double[] arrivalTimes = double[max_clients];
+    assert max_clients >= 0;
+
+    double[] arrivals = new double[max_clients];
     for(int i=0; i < max_clients; i++)
     {
-      arrivalTimes[i] = (double)((Math.log(gen1.nextDouble())) / lambda);
+      arrivals[i] = (double)(-lambda * (Math.log(gen1.nextDouble())));
     }
 
     // pass the arrival time array with the generator to the simulate method
@@ -63,17 +66,17 @@ class TandemQueue
   }
 
 
-  public void simulateFixedTime((RandomStream gen1, // simulates A[i], arrivals
-                                 RandomStream gen2, // simulates S[i][j], service
-                                 double timeCutoff)       // total time cutoff
+  public void simulateFixedTime(RandomStream gen1, // simulates A[i], arrivals
+                                RandomStream gen2, // simulates S[i][j], service
+                                double timeCutoff) // total time cutoff
   {
     assert timeCutoff >= 0;
-    ArrayList<double> arrivalTimes = ArrayList<double>();
+    ArrayList<Double> arrivalTimes = new ArrayList<Double>();
     double totalTime = 0;
 
     while(true)
     {
-      double newArrival = (double)((Math.log(gen1.nextDouble())) / lambda);
+      double newArrival = (double)(-lambda * (Math.log(gen1.nextDouble())));
       if((newArrival + totalTime) > timeCutoff)
       {
         break;
@@ -86,19 +89,50 @@ class TandemQueue
     }
 
     // convert the arraylist into an array of double
-    double[] arrivals = arrivalTimes.toArray();
+    double[] arrivals = new double[arrivalTimes.size()];
+    for(int i=0; i < arrivalTimes.size(); i++)
+    {
+      arrivals[i] = (double)arrivalTimes.get(i);
+    }
+
 
     // pass the arrival time array with the generator to the simulate method
     simulate(gen2, arrivals);
   }
 
-  private void simulate(RandomStream gen2, // simulates service times
-                        double[] arrivals) // arrivals of the clients in the system
+  private TandemQueueResult simulate(RandomStream gen2, // simulates service times
+                                     double[] arrivals) // arrivals of the clients in the system
   {
-      // this is the function called by both simulateFixedNumber and simulateFixedTime
-      // who pass the generator for the service times and the precalculated arrival times
-      
-      
+    // this is the function called by both simulateFixedNumber and simulateFixedTime
+    // who pass the generator for the service times and the precalculated arrival times
+    double[][] D = new double[m][arrivals.length];
+    double[] W = new double[arrivals.length];
+    double[] B = new double[arrivals.length];
+    // everything is already zero-initialized in Java
+    for(int i = 0; i < arrivals.length; i++)
+    {
+      for(int j = 1; j < m; j++)
+      {
+        double serviceTime = -(u[j]) * Math.log(gen2.nextDouble());
+        D[j][i] = Math.max(Math.max((D[j-1][i] + serviceTime), (D[j][i-1] + serviceTime)), D[j+1][i-c[j+1]]);
+
+        double waitingTime = Math.max(Math.max(0, (D[j][i-1] - D[j-1][i])), D[j+1][i-c[j+1]]);
+        W[i] += waitingTime;
+
+        double blockedTime = D[j][i] - D[j-1][i] - serviceTime;
+        B[i] += blockedTime;
+      }
+    }
+    return new TandemQueueResult(arrivals, W, B, D);
   }
 
+
+//   public static void main(String[] args)
+//   {
+//     
+//   }
 }
+
+
+
+

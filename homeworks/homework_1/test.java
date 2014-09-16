@@ -1,6 +1,7 @@
 
 
 import java.math.BigInteger;
+import java.util.Collections;
 public class test{
   
   private int classify(double coord)
@@ -15,5 +16,6 @@ public class test{
     BigInteger n = new BigInteger("1");
     System.out.println(result[2]);
     System.out.println(Integer.MAX_VALUE);
+    System.out.println(Collections.max([2,3,4]));
   }
 }

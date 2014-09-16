@@ -5,7 +5,7 @@ public class UnitCube
 {
   /* a 0,1 3d cube with 10^6 subcubes */
   private int[] array;
-  private int arraySize;
+  private final int arraySize;
 
   public UnitCube()
   {
