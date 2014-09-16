@@ -52,9 +52,8 @@ public class Exercise2
     return ret;
   }
 
-  public int[] a(int number_of_experiments)
+  public int[] a()
   {
-    assert number_of_experiments > 0;
     MathematicaSWB generator = new MathematicaSWB();
     int[] collisions = new int[10];
 
