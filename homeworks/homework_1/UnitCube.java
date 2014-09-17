@@ -1,66 +1,71 @@
-/* unit cube class used in exercise 1.2 */
 import java.util.TreeMap;
 
-public class UnitCube
-{
-  /* a 0,1 3d cube with 10^6 subcubes */
-  private int[] array;
-  private final int arraySize;
+/**
+ * Implements a 3D cube with 10^6 subcubes for testing RNG collisions.
+ * @author gabriel.c-parent
+ *
+ */
+public class UnitCube {
 
-  public UnitCube()
-  {
-    arraySize = 1000000;
-    array = new int[arraySize];
-  }
+	private int[] array;
+	private final int arraySize;
 
-  public void addObservation(double a, double b, double c) throws RuntimeException
-  {
-    // add 1 to the subcube (and check for overflow)
-    int x = (int)(a / 0.01);
-    int y = (int)(b / 0.01);
-    int z = (int)(c / 0.01);
-    int arrayPosition = z + (100*y) + (100*100*x);
+	public UnitCube() {
+		arraySize = 1000000;
+		array = new int[arraySize];
+	}
 
-    if(array[arrayPosition] == Integer.MAX_VALUE)
-    {
-      throw new RuntimeException("Overflow in subcube counter");
-    }
-    else
-    {
-    array[arrayPosition] += 1;
-    }
-  }
 
-  public TreeMap<Integer, Integer> getPointDistribution()
-  {
-    // returns the number of collisions in the subcubes
-    TreeMap<Integer, Integer> collisions = new TreeMap<Integer, Integer>();
-    for(int i= 0; i < arraySize; i++)
-    {
-      int value = array[i];
-      if(!collisions.containsKey(value))
-      {
-        collisions.put(value, 1);
-      }
-      else
-      {
-        collisions.put(value, collisions.get(value) + 1);
-      }
-    }
-    return collisions;
-  }
+	/**
+	 * Adds an observation (3D point)
+	 * @param x first coordinate
+	 * @param y second coordinate
+	 * @param z third coordinate
+	 * @throws RuntimeException if the subcube's integer overflows
+	 */
+	public void addObservation(double x, double y, double z)
+			throws RuntimeException {
+		int a = (int) (x / 0.01);
+		int b = (int) (y / 0.01);
+		int c = (int) (z / 0.01);
+		int arrayPosition = c + (100 * b) + (100 * 100 * a);
 
-  public int getNumCollisions()
-  {
-    // returns the number of empty subcubes
-    int collisions = 0;
-    for(int i = 0; i < arraySize; i++)
-    {
-      if(array[i] > 1)
-      {
-        collisions += (array[i] - 1);
-      }
-    }
-    return collisions;
-  }
+		if (array[arrayPosition] == Integer.MAX_VALUE) {
+			throw new RuntimeException("Overflow in subcube counter");
+		} else {
+			array[arrayPosition] += 1;
+		}
+	}
+
+	/**
+	 * Check all the subcubes and returns the distribution of collisions.
+	 * @return mapping {number of collisions -> number of occurrences}.
+	 */
+	public TreeMap<Integer, Integer> getPointDistribution() {
+		TreeMap<Integer, Integer> collisions = new TreeMap<Integer, Integer>();
+		for (int i = 0; i < arraySize; i++) {
+			int value = array[i];
+			if (!collisions.containsKey(value)) {
+				collisions.put(value, 1);
+			} else {
+				collisions.put(value, collisions.get(value) + 1);
+			}
+		}
+		return collisions;
+	}
+
+	/**
+	 * Returns the number of collisions that have occured, without their distribution.
+	 * @return number of collisions
+	 */
+	public int getNumCollisions() {
+		// returns the number of empty subcubes
+		int collisions = 0;
+		for (int i = 0; i < arraySize; i++) {
+			if (array[i] > 1) {
+				collisions += (array[i] - 1);
+			}
+		}
+		return collisions;
+	}
 }

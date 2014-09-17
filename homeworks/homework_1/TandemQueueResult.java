@@ -18,6 +18,20 @@ class TandemQueueResult
     blocked = B;
   }
 
+  public void testResults()
+  {
+    //
+    for(int client = 0; client < arrivals.length - 1; client++)
+    {
+      //
+      int client2 = client + 1;
+      for(int server = 0; server < m; server++)
+      {
+        continue;
+      }
+    }
+  }
+
   public void printResults()
   {
     // prints the times to the console
@@ -25,17 +39,13 @@ class TandemQueueResult
     System.out.println("ARRIVALS");
     for(int i = 0; i < arrivals.length; i++)
     {
-      if((i % 20) == 0)
-      {
-        System.out.println();
-      }
-      System.out.print(arrivals[i] + " ");
+      System.out.println(arrivals[i]);
     }
     System.out.println();
 
     // departures
     System.out.println("DEPARTURES");
-    for(int client = 0; client < departures[0].length; client++)
+    for(int client = 1; client < departures[0].length; client++)
     {
       System.out.println("client " + client);
       for(int station = 0; station < departures.length; station++)
@@ -47,9 +57,9 @@ class TandemQueueResult
 
     // blocking times
     System.out.println("BLOCKING");
-    for(int i = 0; i < blocked.length; i++)
+    for(int i = 1; i < blocked.length; i++)
     {
-      System.out.print(blocked[i] + " ");
+      System.out.println(blocked[i]);
     }
     System.out.println();
 

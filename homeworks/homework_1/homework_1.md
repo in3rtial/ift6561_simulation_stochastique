@@ -132,11 +132,16 @@ This yields a value of t = 6.
 
 ## [2]
 
-1.4 (a) Implement the SWB generator of Example 1.16, whose parameters
+
+### a)
+
+#### question
+
+Implement the SWB generator of Example 1.16, whose parameters
 are (b, r, k) = (2^31 , 8, 48), and real-valued output defined by
 un = x 2n /2 62 + x2n+1 /2 31 , and use it to generate three-dimensional
 points in [0, 1) 3 , defined by ui = (u25i, u25i+20, u25i+24)
-for i = 0, ..., m−1, for m = 10 4.
+for i = 0, ..., m−1, for m = 10^4.
 
 Partition the unit cube into k = 10^6 subcubes by partitioning each axis
 into 100 equal intervals.
@@ -147,6 +152,11 @@ as in Example 1.6. Repeat this 10 times, to obtain 10 “independent” realizat
 of C, and compare their distribution with the Poisson approximation given in
 Example 1.6. You can do the latter comparison informally; there is no need to
 perform a formal statistical test.
+
+
+#### answer
+
+
 
 
 (b) Redo the same experiment, but this time using a better generator, such
