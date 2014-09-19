@@ -188,6 +188,7 @@ n , RE 2 [ ̃μ n ], pour s = 2, 5, 10, 20.
 
 
 
+C'est un cas de "hit-or-miss" estimator, 1.3.5 dans le livre.
 
 
 
