@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import umontreal.iro.lecuyer.rng.RandomStreamBase;
 import java.text.DecimalFormat;
+import umontreal.iro.lecuyer.probdist.ExponentialDist;
 
 /**
  * Implementation of the Tandem Queue used in exercise 1.4
@@ -10,31 +11,31 @@ import java.text.DecimalFormat;
  */
 class TandemQueue {
 
-	private final int m; // number of servers in the system
-	private final double[] serviceRate; // average processing time at node i
-	private final int[] capacities; // maximum queue size at
-	private final double rate; // arrival rate of the clients
+	private final int numberOfservers;
+	private final double[] serviceRates;
+	private final int[] queueCapacities;
+	private final double arrivalRate;
 
 	/**
 	 * Tandem Queue constructor
 	 * 
-	 * @param numberOfServers
-	 *            number of servers
 	 * @param arrivalRate
-	 *            arrival rate of clients
+	 *            arrival rate of clients from the origin. exponential
+	 *            distribution with mean 1/lambda.
 	 * @param queueCapacities
-	 *            capacity of each queues
+	 *            capacity of each queues excluding the origin (infinite)
 	 * @param serviceTimes
-	 *            service time for each server
+	 *            service time for each server excluding the origin. exponential
+	 *            distribution with mean 1 / serviceTimes[i].
 	 */
-	public TandemQueue(int numberOfServers, double arrivalRate,
-			int[] queueCapacities, double[] serviceTimes) {
-		// assert (numberOfServers+1) == queueCapacities.length
-		// assert (numberOfServers+1) == serviceTimes.length
-		m = numberOfServers + 1;
-		serviceRate = serviceTimes;
-		capacities = queueCapacities;
-		rate = arrivalRate;
+	public TandemQueue(double arrivalRate, int[] queueCapacities,
+			double[] serviceRates) {
+		assert (queueCapacities.length == serviceRates.length);
+
+		this.numberOfservers = queueCapacities.length;
+		this.serviceRates = serviceRates;
+		this.queueCapacities = queueCapacities;
+		this.arrivalRate = arrivalRate;
 	}
 
 	/**
@@ -58,7 +59,8 @@ class TandemQueue {
 		double[] arrivals = new double[numberOfClients];
 		double totalTime = 0;
 		for (int i = 0; i < numberOfClients; i++) {
-			double interval = (double) (-rate * (Math.log(gen1.nextDouble())));
+			double interval = ExponentialDist.inverseF(arrivalRate,
+					gen1.nextDouble());
 			totalTime += interval;
 			arrivals[i] = totalTime;
 		}
@@ -66,7 +68,6 @@ class TandemQueue {
 		// pass the arrival time array with the generator to the simulate method
 		return simulate(gen2, arrivals);
 	}
-
 
 	/**
 	 * Simulates a tandem queue with fixed number of clients in the system,
@@ -83,19 +84,15 @@ class TandemQueue {
 	 *            number of clients in the system
 	 * @return TandemQueueResult object, which can be probed for later analysis
 	 */
-	public TandemQueueResult simulateFixedTime(RandomStreamBase gen1, // simulates
-																		// A[i],
-																		// arrivals
-			RandomStreamBase gen2, // simulates S[i][j], service
-			double timeCutoff) // total time cutoff
-	{
+	public TandemQueueResult simulateFixedTime(RandomStreamBase gen1,
+			RandomStreamBase gen2, double timeCutoff) {
 		assert timeCutoff >= 0;
 		ArrayList<Double> arrivalTimes = new ArrayList<Double>();
 		double totalTime = 0;
 
 		while (true) {
-			double newArrival = (double) (-rate * (Math
-					.log(gen1.nextDouble())));
+			double newArrival = ExponentialDist.inverseF(arrivalRate,
+					gen1.nextDouble());
 			if ((newArrival + totalTime) > timeCutoff) {
 				break;
 			} else {
@@ -115,48 +112,55 @@ class TandemQueue {
 		return simulate(gen2, arrivals);
 	}
 
-	private TandemQueueResult simulate(RandomStreamBase gen2, // simulates
-																// service times
-			double[] arrivals) // arrivals of the clients in the system
-	{
-		// this is the function called by both simulateFixedNumber and
-		// simulateFixedTime
-		// who pass the generator for the service times and the precalculated
-		// arrival times
-		double[][] D = new double[m + 1][arrivals.length + 1];
-		double[] W = new double[arrivals.length + 1];
-		double[] B = new double[arrivals.length + 1];
+	/**
+	 * simulate method is called by other two (fixed number and fixed time) and
+	 * does the heavy lifting
+	 * 
+	 * @param gen2
+	 *            the generator that calculates the service times
+	 * @param arrivals
+	 *            time of arrival of the clients at the first server
+	 * @return structure that keeps statistics on the simulation
+	 */
+	private TandemQueueResult simulate(RandomStreamBase gen2, double[] arrivals) {
+		double[][] departures = new double[numberOfservers + 1][arrivals.length + 1];
+		double[] waitings = new double[arrivals.length + 1];
+		double[] blockings = new double[arrivals.length + 1];
 
 		// everything is already zero-initialized in Java
 		for (int i = 1; i <= arrivals.length; i++) {
-			D[0][i] = arrivals[i - 1];
-			for (int j = 1; j <= m; j++) {
+			departures[0][i] = arrivals[i - 1];
+			for (int j = 1; j < numberOfservers; j++) {
 				/* calculate the departure of i from station j */
-				double serviceTime = -1 * (serviceRate[j]) * Math.log(gen2.nextDouble());
+				double serviceTime = ExponentialDist.inverseF(serviceRates[j],
+						gen2.nextDouble());
 
-				double d1 = D[j - 1][i] + serviceTime; // no waiting, no
-														// blocking
-				double d2 = D[j][i - 1] + serviceTime; // waiting, no blocking
+				double d1 = departures[j - 1][i] + serviceTime; // no waiting,
+																// no
+				// blocking
+				double d2 = departures[j][i - 1] + serviceTime; // waiting, no
+																// blocking
 				double d3 = 0;
-				if ((i - capacities[j + 1]) >= 0 && (j + 1) <= m) {
-					d3 = D[j + 1][i - capacities[j + 1]]; // blocking
+				if (((j + 1) < numberOfservers) && (i - queueCapacities[j + 1]) >= 0) {
+					d3 = departures[j + 1][i - queueCapacities[j + 1]]; // blocking
 				}
 				double departure = Math.max(Math.max(d1, d2), d3);
-				D[j][i] = departure;
+				departures[j][i] = departure;
 
 				/* calculate the waiting time from the departure */
-				double waitingTime = Math.max(0, (D[j][i - 1] - D[j - 1][i]));
-				W[i] += waitingTime;
+				double waitingTime = Math.max(0,
+						(departures[j][i - 1] - departures[j - 1][i]));
+				waitings[i] += waitingTime;
 
 				/* calculate the time spent blocked */
 				// D[j][i] − D[j−1][i] − W[j][i] − S[j][i]
-				double blockedTime = (((D[j][i] - D[j - 1][i]) - waitingTime) - serviceTime);
+				double blockedTime = (((departures[j][i] - departures[j - 1][i]) - waitingTime) - serviceTime);
 
-				B[i] += blockedTime;
+				blockings[i] += blockedTime;
 
 				DecimalFormat df = new DecimalFormat("#.00");
 				System.out.println("(" + i + "," + j + ")" + " "
-						+ df.format(D[j - 1][i]) + "\tw "
+						+ df.format(departures[j - 1][i]) + "\tw "
 						+ df.format(waitingTime) + "\ts "
 						+ df.format(serviceTime) + "\tb "
 						+ df.format(blockedTime) + "\td "
@@ -168,7 +172,7 @@ class TandemQueue {
 
 		}
 		System.out.println("simulation finished");
-		return new TandemQueueResult(arrivals, W, B, D);
+		return new TandemQueueResult(arrivals, waitings, blockings, departures);
 	}
 
 }
