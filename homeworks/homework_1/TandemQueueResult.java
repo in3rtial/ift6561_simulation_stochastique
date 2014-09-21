@@ -18,19 +18,19 @@ class TandemQueueResult
     blocked = B;
   }
 
-  public void testResults()
-  {
-    //
-    for(int client = 0; client < arrivals.length - 1; client++)
-    {
-      //
-      int client2 = client + 1;
-      for(int server = 0; server < m; server++)
-      {
-        continue;
-      }
-    }
-  }
+//  public void testResults()
+//  {
+//    //
+//    for(int client = 0; client < arrivals.length - 1; client++)
+//    {
+//      //
+//      int client2 = client + 1;
+//      for(int server = 0; server < m; server++)
+//      {
+//        continue;
+//      }
+//    }
+//  }
 
   public void printResults()
   {
