@@ -1,9 +1,8 @@
 
 
-import java.math.BigInteger;
-import java.util.Collections;
 import umontreal.iro.lecuyer.rng.MRG32k3a;
-import umontreal.iro.lecuyer.probdist.ExponentialDist;
+import umontreal.iro.lecuyer.stat.Tally;
+
 
 public class test{
 
@@ -13,18 +12,21 @@ public class test{
   {
 
 
-    // tandem queue test
+
     int m = 5;
-    double arrivalRate = 0.01;
-    int[] queueCapacities = {1, 1, 1, 1, 1};
-    double[] serviceTimes = {5.0, 5.0, 5.0, 5.0, 5.0};
+    double arrivalRate = 1;
+    int[] queueCapacities = {1, 1, 1};
+    double[] serviceTimes = {5.0, 5.0, 5.0};
     MRG32k3a gen1 = new MRG32k3a();
     MRG32k3a gen2 = new MRG32k3a();
-    TandemQueue t = new TandemQueue(arrivalRate, queueCapacities, serviceTimes);
-    TandemQueueResult r = t.simulateFixedNumber(gen1, gen2, 3);
-    System.out.println(ExponentialDist.inverseF(1, 0.5));
+    TandemQueue queue = new TandemQueue(3, arrivalRate, queueCapacities, serviceTimes);
+    Tally[] waitingTimes = {new Tally(), new Tally(), new Tally()};
+    Tally[] blockingTimes = {new Tally(), new Tally()};
+    
+    queue.simulateFixedNumber(gen1, gen2, 3, waitingTimes, blockingTimes);
+
     
     
-    
+    //new Exercise4();
   }
 }
