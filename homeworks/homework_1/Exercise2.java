@@ -10,14 +10,15 @@ import umontreal.iro.lecuyer.rng.RandomStreamBase;
  */
 public class Exercise2 {
 
+	int[] collisionsA; // collisions using SWB
+	int[] collisionsB; // collisions using MRG32k3A
 	/**
 	 * Launches the exercise 2.
 	 * 
 	 */
 	public Exercise2() {
-		exerciseA();
-
-		exerciseB();
+		this.collisionsA = exerciseA();
+		this.collisionsB = exerciseB();
 	}
 
 	/**

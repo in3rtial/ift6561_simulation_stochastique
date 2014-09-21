@@ -154,15 +154,51 @@ Example 1.6. You can do the latter comparison informally; there is no need to
 perform a formal statistical test.
 
 
+
 #### answer
 
+This is the total number of collisions observed in the subcubes, for each
+run of the experiment (total of 10 realizations).
+
+[2170, 2137, 2100, 2104, 2127, 2086, 2111, 2114, 2130, 2158]
+
+The expected value calculated with the Poisson approximation is of
+
+~~~python
+    def poisson_estimate_collisions(number_of_points, number_of_states):
+      """ calculates the estimated number of collisions according to the poisson approximation
+      ((numberOfPoints^2) / (2 * numberOfCases))"""
+      return (number_of_points**2) / (2 * (number_of_states))
+
+    estimate = estimated_collisions(10000, 10**6)
+
+    # this is equal to 50.0
+~~~
+
+We can see that there are way more collisions than expected. This is a bad sign for the generator,
+meaning that values do not seem uniform (that could be exploited by an attacker).
 
 
+
+
+
+
+
+#### question
 
 (b) Redo the same experiment, but this time using a better generator, such
 as MRG32k3a in SSJ, for example. Discuss your results.
 
 
+#### answer
+
+[41, 66, 53, 50, 54, 55, 53, 44, 53, 59]
+
+Since the expected value calculated by Poisson approximation is of 50, this pseudorandom number generator
+yields a much more uniform distribution, which is a good thing for a pseudorandom number generator...
+
+However, since many other qualitites are needed to evaluate the performance of a pseudorandom number
+generator, it cannot be said with just those simple observations that this is a good generator.
 
 
 

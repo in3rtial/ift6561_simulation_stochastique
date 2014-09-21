@@ -14,12 +14,12 @@ public class test{
 
 
     int m = 5;
-    double arrivalRate = 1;
-    int[] queueCapacities = {1, 1, 1};
-    double[] serviceTimes = {5.0, 5.0, 5.0};
+    double arrivalRate = 10;
+    int[] queueCapacities = {Integer.MAX_VALUE, 1, 1};
+    double[] serviceRates = {5.0, 5.0, 5.0, 5.0};
     MRG32k3a gen1 = new MRG32k3a();
     MRG32k3a gen2 = new MRG32k3a();
-    TandemQueue queue = new TandemQueue(3, arrivalRate, queueCapacities, serviceTimes);
+    TandemQueue queue = new TandemQueue(3, arrivalRate, queueCapacities, serviceRates);
     Tally[] waitingTimes = {new Tally(), new Tally(), new Tally()};
     Tally[] blockingTimes = {new Tally(), new Tally()};
     
@@ -27,6 +27,6 @@ public class test{
 
     
     
-    //new Exercise4();
+    new Exercise4();
   }
 }
