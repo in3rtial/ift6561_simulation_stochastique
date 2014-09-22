@@ -222,9 +222,12 @@ C'est un cas de "hit-or-miss" estimator, 1.3.5 dans le livre.
 
 *Faites aussi tracer des histogrammes des 1000 valeurs observes pour chacune de ces 5 quantites.*
 
+### Waiting time histograms
 
 ![](waitingTimes.png)
 
+
+### Blocking time histograms
 ![](blockingTimes.png)
 
 
