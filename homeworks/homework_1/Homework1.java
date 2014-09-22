@@ -35,6 +35,12 @@ public class Homework1 {
 		System.out.println("]");
 
 		//---------------------------------------------------------------------
-		Exercise4 e4 = new Exercise4();
+		Exercise4 e4 = new Exercise4(true, 1000);
+		
+		// display the confidence intervals
+		for(int i = 0; i < 3; i++)
+		{
+			
+		}
 	}
 }

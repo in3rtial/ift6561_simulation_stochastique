@@ -193,24 +193,22 @@ class TandemQueue {
 //				DecimalFormat df = new DecimalFormat("#.00");
 //				System.out.println("(" + i + "," + j + ")" + " "
 //						+ df.format(departures[j - 1][i]) + "\tw "
-//						+ df.format(waitingTime) + "\ts "
-//						+ df.format(serviceTime) + "\tb "
-//						+ df.format(blockedTime) + "\td "
+//						+ df.format(waitingTime) + "\tS "
+//						+ df.format(serviceTime) + "\tB "
+//						+ df.format(blockedTime) + "\tD "
 //						+ df.format(departure));
 
 			}
 
 		}
 
-		// add the average waiting times to the statistics collectors
-		for (int j = 0; j < numberOfServers; j++) {
-			waitingTallies[j].add(totalWaiting[j]);
-			if (j != numberOfServers - 1) {
-				blockingTallies[j].add(totalBlocking[j]);
+		// add the average waiting times and blocking times to the statistics collectors
+		for (int server = 1; server <= numberOfServers; server++) {
+			waitingTallies[server-1].add(totalWaiting[server]/arrivals.length);
+			if (server != numberOfServers) {
+				blockingTallies[server-1].add(totalBlocking[server]/arrivals.length);
 			}
 		}
-
-		System.out.println("simulation finished");
 	}
 
 }
