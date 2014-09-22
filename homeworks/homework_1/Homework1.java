@@ -35,12 +35,17 @@ public class Homework1 {
 		System.out.println("]");
 
 		//---------------------------------------------------------------------
-		Exercise4 e4 = new Exercise4(true, 1000);
+		Exercise4 e4 = new Exercise4(false, 1000);
 		
 		// display the confidence intervals
-		for(int i = 0; i < 3; i++)
+		for(int i = 0; i < e4.waitingAverages.length; i++)
 		{
-			
+			System.out.println(e4.waitingAverages[i].report());
+			if(i != e4.waitingAverages.length -1)
+			{
+
+				System.out.println(e4.blockedAverages[i].report());
+			}
 		}
 	}
 }

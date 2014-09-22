@@ -1,14 +1,12 @@
 
-# IFT6561
-# Gabriel C-Parent, C5912
-
-# Homework 1
+# IFT6561    Homework 1
+# Gabriel C-Parent    C5912
 
 
 ## Exercise 1 a)
 
 
-*What is the number of ways of choosing the first t cards, for t ≤ 52,*
+*What is the number of ways of choosing the first t cards, for t <= 52,*
 *taking order into account?*
 
 
@@ -29,6 +27,7 @@
 
 
 
+
 ## Exercise 1 b)
 
 
@@ -45,6 +44,8 @@
     - otherwise some state would be impossible to reach (violating the condition)
 
 
+\newpage
+
 
 ## Exercise 1 c)
 
@@ -52,7 +53,6 @@
 *What is that minimal number of bits for t = 52? (Give a numerical value.)*
 
 ~~~python
-    # the dumb iterative way
 
     def factorial(n):
       """iterative factorial"""
@@ -73,14 +73,15 @@
 ~~~
 
 
-This yield a value of 226 bits to represent 52!. If t without order was meant, then
+This yield a value of 226 bits to represent 52!. If the order is not important,
 0 bits would be needed since there would be only one possible state (all of the cards).
 
 
-## Exercise 1 a)
+
+## Exercise 1 d)
 
 
-*If the period length is 2^31 −2 (many widely-used classical LCGs have that value),*
+*If the period length is 2^31 -2 (many widely-used classical LCGs have that value),*
 *what is the maximal value of t for which we can have all the possibilities?*
 
 
@@ -109,6 +110,9 @@ This yield a value of 226 bits to represent 52!. If t without order was meant, t
 This yields a value of t = 6. There would be enough states to represent
 
 
+\newpage
+
+
 ## Exercise 2 a)
 
 
@@ -116,12 +120,12 @@ This yields a value of t = 6. There would be enough states to represent
 *are (b, r, k) = (2^31 , 8, 48), and real-valued output defined by*
 *un = x 2n /2 62 + x2n+1 /2 31 , and use it to generate three-dimensional*
 *points in [0, 1) 3 , defined by ui = (u25i, u25i+20, u25i+24)*
-*for i = 0, ..., m−1, for m = 10^4.*
+*for i = 0, ..., m-1, for m = 10^4.*
 
 *Partition the unit cube into k = 10^6 subcubes by partitioning each axis*
 *into 100 equal intervals.*
 
-*Number these subcubes from 0 to k − 1 (in any way), find the number of the*
+*Number these subcubes from 0 to k - 1 (in any way), find the number of the*
 *subcube in which each point u i has fallen, and count the number C of collisions*
 *as in Example 1.6. Repeat this 10 times, to obtain 10 “independent” realizations*
 *of C, and compare their distribution with the Poisson approximation given in*
@@ -138,7 +142,7 @@ The expected value calculated with the Poisson approximation is the following:
 
 ~~~python
     def poisson_estimate_collisions(number_of_points, number_of_states):
-      """ calculates the estimated number of collisions according to the poisson approximation
+      """ calculates the estimated number of collisions according to
       ((numberOfPoints^2) / (2 * numberOfCases))"""
       return (number_of_points**2) / (2 * (number_of_states))
 
@@ -170,6 +174,9 @@ generator, it cannot be said with just those simple observations that this is a 
 
 
 
+\newpage
+
+
 ## Exercise 3 a)
 
 Voir l’exercice 1.18 des notes. Il n’y a pas de simulation a implanter pour cette question.
@@ -177,9 +184,9 @@ L’idee est de comprendre ce qui se passe si on estime le volume d’une sphere
 dimensions par la methode Monte Carlo. Il s’agit bien sur d’un exercice purement academique,
 puisqu’on connait deja le volume de cette sphere, mais il permet de comprendre un type de
 difficulte qui survient dans de nombreuses applications pratiques. Pour estimer le volume, on
-tire n points au hasard dans le cube (0, 1) s , on calcule la fraction p  ̃ n de ces points qui tombent
+tire n points au hasard dans le cube (0, 1) s , on calcule la fraction pn de ces points qui tombent
 dans la sphere (pour estimer la fraction p du cube occupe par la sphere), et l’estimateur du
-volume est μn = 2 s pn .
+volume est un = 2 s pn .
 (a) Prouvez que cet estimateur est sans biais. Donnez aussi (avec preuve) des formules exactes
 pour la variance et l’erreur relative de cet estimateur, en fonction de s.
 
@@ -196,42 +203,72 @@ pour la variance et l’erreur relative de cet estimateur, en fonction de s.
 ## Exercise 3 c)
 
 
-*Calculez les valeurs numeriques de p, V s , et de l’erreur relative au carre de μ*
-*n , RE 2 [ ̃μ n ], pour s = 2, 5, 10, 20.*
+*Calculez les valeurs numeriques de p, V s , et de l’erreur relative au carre de u*
+*n , RE 2 [ ̃u n ], pour s = 2, 5, 10, 20.*
 
 
 
 C'est un cas de "hit-or-miss" estimator, 1.3.5 dans le livre.
 
 
+\newpage
+
+
 ## Exercise 4 a)
 
-*On vous demande ensuite de faire les experiences suivantes avec votre simulateur. Construisez*
-*un modele avec λ = 1, m = 3, μ 1 = 1.5, μ 2 = μ 3 = 1.2, c 1 = ∞, c 2 = 4, et c 3 = 8.*
-*Simulez ce modele pour un horizon de temps T = 1000 et calculez l’attente totale et le temps*
-*total de blocage a chacune des trois stations (sauf a la derniere, ou il n’y a pas de blocage).*
+*Repetez cette simulation n = 1000 fois, puis calculez la valeur estimee et un*
+*intervalle de confiance a 95% pour l’esperance de chacune des 5 quantites*
+*calcules (temps total d’attente et temps de blocage a chaque station).*
 
-*Notez que ce ne sont pas les memes mesures que dans l’algorithme des notes. Repetez cette*
-*simulation n = 1000 fois, puis calculez la valeur estimee et un intervalle de confiance a*
-*95% pour l’esperance de chacune des 5 quantites calcules (temps total d’attente et temps de*
-*blocage a chaque station).*
 
+~~~
+    REPORT on Tally stat. collector ==> Average waiting times for station 1
+        num. obs.      min          max        average     standard dev.
+          1000        0.773       14.758        2.715        1.446
+
+    REPORT on Tally stat. collector ==> Average blocking times for station 1
+        num. obs.      min          max        average     standard dev.
+          1000        0.011        0.244        0.074        0.032
+
+    REPORT on Tally stat. collector ==> Average waiting times for station 2
+        num. obs.      min          max        average     standard dev.
+          1000        1.462        4.706        2.706        0.462
+
+    REPORT on Tally stat. collector ==> Average blocking times for station 2
+        num. obs.      min          max        average     standard dev.
+          1000     -2.2E-15      2.4E-15     -1.1E-17      7.8E-16
+
+    REPORT on Tally stat. collector ==> Average waiting times for station 3
+        num. obs.      min          max        average     standard dev.
+          1000        1.718       13.739        3.881        1.458
+~~~
+
+
+\newpage
 
 
 ## Exercise 4 b)
 
 *Faites aussi tracer des histogrammes des 1000 valeurs observes pour chacune de ces 5 quantites.*
 
+\newpage
+
 ### Waiting time histograms
+
 
 ![](waitingTimes.png)
 
 
+\newpage
+
 ### Blocking time histograms
+
+
 ![](blockingTimes.png)
 
 
-The histograms were made using *Seaborn* library in python3. The script is joined to the other codes.
+The histograms were made using *Seaborn* library in python3.
+The script is available with the rest of the code.
 The number of bins was decided using the Freedman–Diaconis formula.
 
 
