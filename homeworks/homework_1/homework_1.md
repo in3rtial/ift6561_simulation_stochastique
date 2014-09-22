@@ -179,16 +179,17 @@ generator, it cannot be said with just those simple observations that this is a 
 
 ## Exercise 3 a)
 
-Voir l’exercice 1.18 des notes. Il n’y a pas de simulation a implanter pour cette question.
-L’idee est de comprendre ce qui se passe si on estime le volume d’une sphere de rayon 1 en s
-dimensions par la methode Monte Carlo. Il s’agit bien sur d’un exercice purement academique,
-puisqu’on connait deja le volume de cette sphere, mais il permet de comprendre un type de
-difficulte qui survient dans de nombreuses applications pratiques. Pour estimer le volume, on
-tire n points au hasard dans le cube (0, 1) s , on calcule la fraction pn de ces points qui tombent
-dans la sphere (pour estimer la fraction p du cube occupe par la sphere), et l’estimateur du
-volume est un = 2 s pn .
-(a) Prouvez que cet estimateur est sans biais. Donnez aussi (avec preuve) des formules exactes
-pour la variance et l’erreur relative de cet estimateur, en fonction de s.
+*Voir l’exercice 1.18 des notes. Il n’y a pas de simulation a implanter pour cette question.*
+*L’idee est de comprendre ce qui se passe si on estime le volume d’une sphere de rayon 1 en s*
+*dimensions par la methode Monte Carlo. Il s’agit bien sur d’un exercice purement academique,*
+*puisqu’on connait deja le volume de cette sphere, mais il permet de comprendre un type de*
+*difficulte qui survient dans de nombreuses applications pratiques. Pour estimer le volume, on*
+*tire n points au hasard dans le cube (0, 1) s , on calcule la fraction pn de ces points qui tombent*
+*dans la sphere (pour estimer la fraction p du cube occupe par la sphere), et l’estimateur du*
+*volume est un = 2 s pn.*
+*(a) Prouvez que cet estimateur est sans biais. Donnez aussi (avec preuve) des formules exactes*
+*pour la variance et l’erreur relative de cet estimateur, en fonction de s.*
+
 
 
 ## Exercise 3 b)
@@ -206,10 +207,29 @@ pour la variance et l’erreur relative de cet estimateur, en fonction de s.
 *Calculez les valeurs numeriques de p, V s , et de l’erreur relative au carre de u*
 *n , RE 2 [ ̃u n ], pour s = 2, 5, 10, 20.*
 
+~~~python
+    from math import gamma, pi
+
+    def Vs(s):
+      """calculates the volume of the s-dim unit cube"""
+      return ((pi**(s/2))/gamma(1+(s/2)))
+
+    def p(s):
+       """returns value of p in s-dimensions"""
+       return(Vs(s)/(2**s))
 
 
-C'est un cas de "hit-or-miss" estimator, 1.3.5 dans le livre.
+    def RE(s):
+      """calculates the RE in s-dims"""
+      return()
 
+    
+    
+    
+        
+
+
+~~~
 
 \newpage
 
