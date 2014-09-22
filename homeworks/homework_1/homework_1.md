@@ -223,9 +223,9 @@ C'est un cas de "hit-or-miss" estimator, 1.3.5 dans le livre.
 *Faites aussi tracer des histogrammes des 1000 valeurs observes pour chacune de ces 5 quantites.*
 
 
-![]("waitingTimes.png")
+![](waitingTimes.png)
 
-![]("blockingTimes.png")
+![](blockingTimes.png)
 
 
 The histograms were made using *Seaborn* library in python3. The script is joined to the other codes.
