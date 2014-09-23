@@ -11,6 +11,7 @@ public class Homework1 {
 	public static void main(String[] args) {
 
 		//---------------------------------------------------------------------
+		System.out.println("EXERCISE 2");
 		Exercise2 e2 = new Exercise2();
 		System.out.print("[");
 		for(int i = 0; i < e2.collisionsA.length; i++)
@@ -36,7 +37,7 @@ public class Homework1 {
 
 		//---------------------------------------------------------------------
 		Exercise4 e4 = new Exercise4(false, 1000);
-		
+		System.out.println("\n\nEXERCISE 4");
 		// display the confidence intervals
 		for(int i = 0; i < e4.waitingAverages.length; i++)
 		{

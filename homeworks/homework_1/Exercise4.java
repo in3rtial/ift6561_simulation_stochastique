@@ -4,16 +4,22 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 
-
 /**
  * exercise 4 
  * Tandem Queue
+ * chose to dump the tally stored data into csv file (exercise2.csv)
+ * and plot it using python's graphic libs (easier and prettier).
  */
 
 class Exercise4 {
 	public final TallyStore[] waitingAverages;
 	public final TallyStore[] blockedAverages;
 
+	/**
+	 * launches the exercise 4
+	 * @param dumpData true if data must be dumped in exercise.csv file
+	 * @param numberOfSimulations number of runs of the simulation
+	 */
 	public Exercise4(boolean dumpData, int numberOfSimulations) {
 		// use Integer.MAX_VALUE to symbolize positive infinity
 		TandemQueue queue = new TandemQueue(3, 1, new int[] {

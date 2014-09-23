@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import umontreal.iro.lecuyer.rng.RandomStreamBase;
-import java.text.DecimalFormat;
 import umontreal.iro.lecuyer.probdist.ExponentialDist;
 import umontreal.iro.lecuyer.stat.Tally;
 
