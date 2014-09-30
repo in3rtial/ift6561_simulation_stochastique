@@ -5,8 +5,9 @@ import umontreal.iro.lecuyer.probdist.NormalDist;
 import umontreal.iro.lecuyer.stat.Tally;
 import umontreal.iro.lecuyer.util.*;
 
+
 public class Asian {
-   double strike;    // Strike price.
+   double strikePrice;    // Strike price, at which the buyer will by the stocks in T time
    int s;            // Number of observation times.
    double discount;  // Discount factor exp(-r * zeta[t]).
    double[] muDelta; // Differences * (r - sigma^2/2).
@@ -14,21 +15,38 @@ public class Asian {
    double[] logS;    // Log of the GBM process: logS[t] = log (S[t]).
 
    // Array zeta[0..s] must contain zeta[0]=0.0, plus the s observation times.
-   public Asian (double r, double sigma, double strike,
-                 double s0, int s, double[] zeta) {
-      this.strike = strike;
+
+   /**
+    * constructor for Asian option
+    * @param shortRate compound rate for bank account
+    * @param volatility of the standard Brownian motion
+    * @param strikePrice
+    * @param s0
+    * @param s
+    * @param zeta
+    */
+   public Asian (double shortRate,
+                 double volatility,
+                 double strikePrice,
+                 double s0,
+                 int s,
+                 double[] zeta)
+   {
+      this.strikePrice = strikePrice;
       this.s = s;
-      discount = Math.exp (-r * zeta[s]);
-      double mu = r - 0.5 * sigma * sigma;
+      discount = Math.exp (-shortRate * zeta[s]);
+      double mu = shortRate - 0.5 * volatility * volatility;
       muDelta = new double[s];
       sigmaSqrtDelta = new double[s];
       logS = new double[s+1];
       double delta;
+
       for (int j = 0; j < s; j++) {
          delta = zeta[j+1] - zeta[j];
          muDelta[j] = mu * delta;
-         sigmaSqrtDelta[j] = sigma * Math.sqrt (delta);
+         sigmaSqrtDelta[j] = volatility * Math.sqrt (delta);
       }
+
       logS[0] = Math.log (s0);
    }
 
@@ -44,7 +62,7 @@ public class Asian {
        double average = 0.0;  // Average of the GBM process.
        for (int j = 1; j <= s; j++) average += Math.exp (logS[j]);
        average /= s;
-       if (average > strike) return discount * (average - strike);
+       if (average > strikePrice) return discount * (average - strikePrice);
        else return 0.0;
    }
 
