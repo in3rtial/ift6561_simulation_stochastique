@@ -1,0 +1,48 @@
+\documentclass[12pt]{article}
+
+\usepackage{tikz}
+\usetikzlibrary{plotmarks}
+\begin{document}
+
+% PGF/TikZ picture from SSJ: Total waiting time at station 2
+% XScale = 0.1,  YScale = 1.0,  XShift = 1100.0,  YShift = 0.0
+% Therefore, thisFileXValue = (originalSeriesXValue+XShift)*XScale
+%        and thisFileYValue = (originalSeriesYValue+YShift)*YScale
+
+\begin{figure}
+\begin{center}
+\begin{tikzpicture}[x=0.09230769230769231cm, y=0.03636363636363636cm]
+\footnotesize
+\draw [-latex] ([xshift=-0mm] 0.0,0) -- ([xshift=3mm] 130.0,0) node[right] { };
+\draw (0.0,0) -- +(0mm,1mm) -- +(0mm,-1mm) node[below] {1100};
+\draw (25.0,0) -- +(0mm,1mm) -- +(0mm,-1mm) node[below] {1350};
+\draw (50.0,0) -- +(0mm,1mm) -- +(0mm,-1mm) node[below] {1600};
+\draw (75.0,0) -- +(0mm,1mm) -- +(0mm,-1mm) node[below] {1850};
+\draw (100.0,0) -- +(0mm,1mm) -- +(0mm,-1mm) node[below] {2100};
+\draw (125.0,0) -- +(0mm,1mm) -- +(0mm,-1mm) node[below] {2350};
+\draw [-latex] ([yshift=-0mm] 0,-0.0) -- ([yshift=3mm] 0, 220.0) node[above] { };
+\draw (0,0.0) -- +(1mm,0mm) -- +(-1mm,0mm) node[left] {0};
+\draw (0,25.0) -- +(1mm,0mm) -- +(-1mm,0mm) node[left] {25};
+\draw (0,50.0) -- +(1mm,0mm) -- +(-1mm,0mm) node[left] {50};
+\draw (0,75.0) -- +(1mm,0mm) -- +(-1mm,0mm) node[left] {75};
+\draw (0,100.0) -- +(1mm,0mm) -- +(-1mm,0mm) node[left] {100};
+\draw (0,125.0) -- +(1mm,0mm) -- +(-1mm,0mm) node[left] {125};
+\draw (0,150.0) -- +(1mm,0mm) -- +(-1mm,0mm) node[left] {150};
+\draw (0,175.0) -- +(1mm,0mm) -- +(-1mm,0mm) node[left] {175};
+\draw (0,200.0) -- +(1mm,0mm) -- +(-1mm,0mm) node[left] {200};
+\draw [line width=0.50pt, color=red] ([xshift=0.0000] 4.6010, 0.0000) rectangle ([xshift=-0.0000] 15.8409, 4.0000); %
+\draw [line width=0.50pt, color=red] ([xshift=0.0000] 15.8409, 0.0000) rectangle ([xshift=-0.0000] 27.0808, 28.0000); %
+\draw [line width=0.50pt, color=red] ([xshift=0.0000] 27.0808, 0.0000) rectangle ([xshift=-0.0000] 38.3208, 76.0000); %
+\draw [line width=0.50pt, color=red] ([xshift=0.0000] 38.3208, 0.0000) rectangle ([xshift=-0.0000] 49.5607, 116.0000); %
+\draw [line width=0.50pt, color=red] ([xshift=0.0000] 49.5607, 0.0000) rectangle ([xshift=-0.0000] 60.8006, 143.0000); %
+\draw [line width=0.50pt, color=red] ([xshift=0.0000] 60.8006, 0.0000) rectangle ([xshift=-0.0000] 72.0405, 209.0000); %
+\draw [line width=0.50pt, color=red] ([xshift=0.0000] 72.0405, 0.0000) rectangle ([xshift=-0.0000] 83.2805, 156.0000); %
+\draw [line width=0.50pt, color=red] ([xshift=0.0000] 83.2805, 0.0000) rectangle ([xshift=-0.0000] 94.5204, 149.0000); %
+\draw [line width=0.50pt, color=red] ([xshift=0.0000] 94.5204, 0.0000) rectangle ([xshift=-0.0000] 105.7603, 81.0000); %
+\draw [line width=0.50pt, color=red] ([xshift=0.0000] 105.7603, 0.0000) rectangle ([xshift=-0.0000] 117.0002, 31.0000); %
+\draw [line width=0.50pt, color=red] ([xshift=0.0000] 117.0002, 0.0000) rectangle ([xshift=-0.0000] 128.2401, 7.0000); %
+\end{tikzpicture}
+\end{center}
+\caption{Total waiting time at station 2}
+\end{figure}
+\end{document}
