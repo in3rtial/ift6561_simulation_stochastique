@@ -1,0 +1,76 @@
+
+REPORT on Tally stat. collector ==> Delta = 1.0E-15 IRN
+    num. obs.      min          max        average     standard dev.
+     10000     -2.2E+17      2.8E+17      2.8E+14      3.2E+16
+  95.0% confidence interval for mean (student): (  -3.4E+14,   9.0E+14 )
+
+REPORT on Tally stat. collector ==> Delta = 1.0000000000000002E-14 IRN
+    num. obs.      min          max        average     standard dev.
+     10000     -1.7E+16      1.9E+16      8.0E+11      3.2E+15
+  95.0% confidence interval for mean (student): (  -6.2E+13,   6.3E+13 )
+
+REPORT on Tally stat. collector ==> Delta = 1.0000000000000002E-13 IRN
+    num. obs.      min          max        average     standard dev.
+     10000     -2.2E+15      1.9E+15     -1.4E+12      3.3E+14
+  95.0% confidence interval for mean (student): (  -7.8E+12,   4.9E+12 )
+
+REPORT on Tally stat. collector ==> Delta = 1.0000000000000002E-12 IRN
+    num. obs.      min          max        average     standard dev.
+     10000     -2.4E+14      2.0E+14      1.4E+11      3.3E+13
+  95.0% confidence interval for mean (student): (  -5.0E+11,   7.8E+11 )
+
+REPORT on Tally stat. collector ==> Delta = 1.0000000000000001E-11 IRN
+    num. obs.      min          max        average     standard dev.
+     10000     -2.1E+13      1.9E+13     -3.2E+10      3.3E+12
+  95.0% confidence interval for mean (student): (  -9.7E+10,   3.3E+10 )
+
+REPORT on Tally stat. collector ==> Delta = 1.0000000000000002E-10 IRN
+    num. obs.      min          max        average     standard dev.
+     10000     -2.4E+12      2.6E+12      -7.0E+9      3.2E+11
+  95.0% confidence interval for mean (student): (  -1.3E+10,   -7.0E+8 )
+
+REPORT on Tally stat. collector ==> Delta = 1.0000000000000003E-9 IRN
+    num. obs.      min          max        average     standard dev.
+     10000     -2.2E+11      2.2E+11      -2.9E+8      3.2E+10
+  95.0% confidence interval for mean (student): (   -9.2E+8,    3.4E+8 )
+
+REPORT on Tally stat. collector ==> Delta = 1.0000000000000004E-8 IRN
+    num. obs.      min          max        average     standard dev.
+     10000     -2.6E+10      1.9E+10 -2602131.883       3.2E+9
+  95.0% confidence interval for mean (student): (   -6.6E+7,    6.0E+7 )
+
+REPORT on Tally stat. collector ==> Delta = 1.0000000000000004E-7 IRN
+    num. obs.      min          max        average     standard dev.
+     10000      -2.6E+9       2.0E+9  1529615.810       3.2E+8
+  95.0% confidence interval for mean (student): (   -4.8E+6,    7.9E+6 )
+
+REPORT on Tally stat. collector ==> Delta = 1.0000000000000004E-6 IRN
+    num. obs.      min          max        average     standard dev.
+     10000      -2.3E+8       2.1E+8    22253.595 31846449.314
+  95.0% confidence interval for mean (student): (   -6.0E+5,646508.097 )
+
+REPORT on Tally stat. collector ==> Delta = 1.0000000000000004E-5 IRN
+    num. obs.      min          max        average     standard dev.
+     10000      -2.0E+7 20310627.648     4711.156  3168245.860
+  95.0% confidence interval for mean (student): (-57392.840, 66815.151 )
+
+REPORT on Tally stat. collector ==> Delta = 1.0000000000000005E-4 IRN
+    num. obs.      min          max        average     standard dev.
+     10000 -2406322.137  2193365.231      583.707   330153.816
+  95.0% confidence interval for mean (student): ( -5887.973,  7055.386 )
+
+REPORT on Tally stat. collector ==> Delta = 0.0010000000000000005 IRN
+    num. obs.      min          max        average     standard dev.
+     10000  -222163.323   297673.361     -701.288    32632.375
+  95.0% confidence interval for mean (student): ( -1340.948,   -61.628 )
+
+REPORT on Tally stat. collector ==> Delta = 0.010000000000000005 IRN
+    num. obs.      min          max        average     standard dev.
+     10000   -20297.639    19625.202      -30.250     3189.792
+  95.0% confidence interval for mean (student): (   -92.776,    32.276 )
+
+REPORT on Tally stat. collector ==> Delta = 0.10000000000000006 IRN
+    num. obs.      min          max        average     standard dev.
+     10000    -1809.602     1975.013        4.408      324.098
+  95.0% confidence interval for mean (student): (    -1.945,    10.761 )
+

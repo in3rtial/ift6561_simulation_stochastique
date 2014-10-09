@@ -1,0 +1,48 @@
+\documentclass[12pt]{article}
+
+\usepackage{tikz}
+\usetikzlibrary{plotmarks}
+\begin{document}
+
+% PGF/TikZ picture from SSJ: Total blocking time at station 2
+% XScale = 1.0,  YScale = 1.0,  XShift = 0.0,  YShift = 0.0
+% Therefore, thisFileXValue = (originalSeriesXValue+XShift)*XScale
+%        and thisFileYValue = (originalSeriesYValue+YShift)*YScale
+
+\begin{figure}
+\begin{center}
+\begin{tikzpicture}[x=0.1cm, y=0.034782608695652174cm]
+\footnotesize
+\draw [-latex] ([xshift=-0mm] 0.0,0) -- ([xshift=3mm] 120.0,0) node[right] { };
+\draw (0.0,0) -- +(0mm,1mm) -- +(0mm,-1mm) node[below] {0};
+\draw (25.0,0) -- +(0mm,1mm) -- +(0mm,-1mm) node[below] {25};
+\draw (50.0,0) -- +(0mm,1mm) -- +(0mm,-1mm) node[below] {50};
+\draw (75.0,0) -- +(0mm,1mm) -- +(0mm,-1mm) node[below] {75};
+\draw (100.0,0) -- +(0mm,1mm) -- +(0mm,-1mm) node[below] {100};
+\draw [-latex] ([yshift=-0mm] 0,-0.0) -- ([yshift=3mm] 0, 230.0) node[above] { };
+\draw (0,0.0) -- +(1mm,0mm) -- +(-1mm,0mm) node[left] {0};
+\draw (0,25.0) -- +(1mm,0mm) -- +(-1mm,0mm) node[left] {25};
+\draw (0,50.0) -- +(1mm,0mm) -- +(-1mm,0mm) node[left] {50};
+\draw (0,75.0) -- +(1mm,0mm) -- +(-1mm,0mm) node[left] {75};
+\draw (0,100.0) -- +(1mm,0mm) -- +(-1mm,0mm) node[left] {100};
+\draw (0,125.0) -- +(1mm,0mm) -- +(-1mm,0mm) node[left] {125};
+\draw (0,150.0) -- +(1mm,0mm) -- +(-1mm,0mm) node[left] {150};
+\draw (0,175.0) -- +(1mm,0mm) -- +(-1mm,0mm) node[left] {175};
+\draw (0,200.0) -- +(1mm,0mm) -- +(-1mm,0mm) node[left] {200};
+\draw (0,225.0) -- +(1mm,0mm) -- +(-1mm,0mm) node[left] {225};
+\draw [line width=0.50pt, color=red] ([xshift=0.0000] 3.7216, 0.0000) rectangle ([xshift=-0.0000] 14.3364, 23.0000); %
+\draw [line width=0.50pt, color=red] ([xshift=0.0000] 14.3364, 0.0000) rectangle ([xshift=-0.0000] 24.9513, 90.0000); %
+\draw [line width=0.50pt, color=red] ([xshift=0.0000] 24.9513, 0.0000) rectangle ([xshift=-0.0000] 35.5661, 200.0000); %
+\draw [line width=0.50pt, color=red] ([xshift=0.0000] 35.5661, 0.0000) rectangle ([xshift=-0.0000] 46.1810, 215.0000); %
+\draw [line width=0.50pt, color=red] ([xshift=0.0000] 46.1810, 0.0000) rectangle ([xshift=-0.0000] 56.7958, 196.0000); %
+\draw [line width=0.50pt, color=red] ([xshift=0.0000] 56.7958, 0.0000) rectangle ([xshift=-0.0000] 67.4107, 131.0000); %
+\draw [line width=0.50pt, color=red] ([xshift=0.0000] 67.4107, 0.0000) rectangle ([xshift=-0.0000] 78.0256, 70.0000); %
+\draw [line width=0.50pt, color=red] ([xshift=0.0000] 78.0256, 0.0000) rectangle ([xshift=-0.0000] 88.6404, 42.0000); %
+\draw [line width=0.50pt, color=red] ([xshift=0.0000] 88.6404, 0.0000) rectangle ([xshift=-0.0000] 99.2553, 23.0000); %
+\draw [line width=0.50pt, color=red] ([xshift=0.0000] 99.2553, 0.0000) rectangle ([xshift=-0.0000] 109.8701, 7.0000); %
+\draw [line width=0.50pt, color=red] ([xshift=0.0000] 109.8701, 0.0000) rectangle ([xshift=-0.0000] 120.0000, 3.0000); %
+\end{tikzpicture}
+\end{center}
+\caption{Total blocking time at station 2}
+\end{figure}
+\end{document}
