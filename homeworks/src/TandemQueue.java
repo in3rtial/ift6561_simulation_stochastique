@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 import umontreal.iro.lecuyer.rng.RandomStreamBase;
 import umontreal.iro.lecuyer.probdist.ExponentialDist;
@@ -182,8 +183,13 @@ class TandemQueue {
 						(departures[j][i - 1] - departures[j - 1][i]));
 
 				/* calculate the time spent blocked */
+				//  D[j][id[j]] - D[j - 1][id[j - 1]] - wji - sji;
 				// D[j][i] − D[j−1][i] − W[j][i] − S[j][i]
 				double blockedTime = (((departures[j][i] - departures[j - 1][i]) - waitingTime) - serviceTime);
+				if (blockedTime < 0)
+				{
+					System.out.println("block problem" + blockedTime);
+				}
 
 
 				totalWaiting[j] += waitingTime;
