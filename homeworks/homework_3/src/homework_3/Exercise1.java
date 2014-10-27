@@ -26,7 +26,7 @@ public class Exercise1 {
 
 		Distribution stdNorm = new NormalDist(0, 1);
 		Tally stats = new Tally(tallyName);
-		stats.setConfidenceIntervalNormal();
+		stats.setConfidenceIntervalStudent();
 		
 		for(int i = 0; i < n; i++)
 		{
@@ -67,7 +67,8 @@ public class Exercise1 {
 		Distribution dist1 = new NormalDist(1.0, 1.0);
 		Distribution dist2 = new NormalDist(1.0, 1.0);
 		Tally stats = new Tally(tallyName);
-		stats.setConfidenceIntervalNormal();
+		stats.setConfidenceIntervalStudent();
+		
 		for(int i = 0 ; i < n; i++)
 		{
 			double Y1 = dist1.inverseF(prng.nextDouble());
@@ -88,8 +89,9 @@ public class Exercise1 {
 	public static void runExperiment(int n, double a, double b, double K)
 	{
 		MRG32k3a prng = new MRG32k3a();
-		System.out.println(simulateDumb(a, b, K, n, prng, "CRUDE {" + a + ", "+ b + ", " + K+"}").report());
-		System.out.println(simulateIS(a, b, K, n, prng, "IS {" + a + ", "+ b + ", " + K+"}").report());
+		System.out.println(simulateDumb(a, b, K, n, prng, "HIT-OR-MISS {a= " + a + ", b= "+ b + ", k= " + K+"}").report());
+		System.out.println(simulateIS(a, b, K, n, prng, "IS {a= " + a + ", b= "+ b + ", k= " + K+"}").report());
+		System.out.println();
 	}
 	
 	public static void main(String[] args)
@@ -102,7 +104,7 @@ public class Exercise1 {
 		// setup the distributions
 
 
-		int n = 100000;
+		int n = 10000;
 		// K = 1, a = 0, b = 2
 		runExperiment(n, 0, 2, 1);
 		
