@@ -57,15 +57,12 @@ public class AsianVG {
 		for(int i = 1; i <= this.s; i++)
 		{
 			double t = zeta[i];
-			double St = this.s0 * Math.exp(r*t + path[i] + w *t);
+			double St = path[i];
 			average += St;
 		}
-		if(path.length != s+1)
-		{
-			System.out.println("Problem");
-		}
+
 		average /= s;
-		
+		System.out.println(average);
 		if (average > this.K)
 			return this.discount * (average - this.K);
 		else
@@ -82,8 +79,12 @@ public class AsianVG {
 
 	   for(int i = 0; i < n; i++)
 	   {
+		   
 		   process.resetStartProcess();
 		   process.generatePath();
+		   for(int j = 0; j < process.getPath().length; j++)
+			   System.out.println(process.getPath()[i]);
+			   
 		   stats.add(getPayoff(process.getPath()));
 
 	   }
@@ -99,8 +100,10 @@ public class AsianVG {
 	   process.setObservationTimes(this.zeta, this.s);
 	   for(int i = 0; i < n; i++)
 	   {
-		   process.resetStartProcess();
+		   //process.resetStartProcess();
 		   process.generatePath();
+		   for(int j = 0; j < process.getPath().length; j++)
+			   System.out.println(process.getPath()[i]);
 		   stats.add(getPayoff(process.getPath()));
 		   gen.resetNextSubstream();
 	   }
@@ -150,17 +153,28 @@ public class AsianVG {
       Tally BGDS = new Tally("BGDS");
       BGDS.setConfidenceIntervalStudent();
       
-      int n = 1000;
+      int n = 100000;
       
-      process.BGSS(n, BGSS);
-      process.BGBS(n, BGBS);
+      process.BGSS(1, BGSS);
+      process.BGBS(1, BGBS);
       process.BGDS(n, BGDS);
 
       System.out.println(BGSS.report());
       System.out.println(BGBS.report());
       System.out.println(BGDS.report());
       
-
+      /*
+      VarianceGammaProcess G2 = new VarianceGammaProcess(100, -0.1436, // drift of BM (mu)
+	    		  					0.12136, // volatility of BM (sigma)
+	    		  					0.3, // variance of the VG
+	    		  					new MRG32k3a());
+      G2.setObservationTimes(zeta, s);
+      for(int i = 0; i < 100; i++)
+      {
+    	  G2.generatePath();
+    	  System.out.println(process.getPayoff(G2.getPath()));
+      }
+      */
 
    }
 }
