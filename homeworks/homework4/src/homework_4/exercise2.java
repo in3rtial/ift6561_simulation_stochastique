@@ -1,7 +1,6 @@
 package homework_4;
 
 import umontreal.iro.lecuyer.rng.*;
-import umontreal.iro.lecuyer.stat.TallyStore;
 import umontreal.iro.lecuyer.charts.*;
 
 public class exercise2 {
