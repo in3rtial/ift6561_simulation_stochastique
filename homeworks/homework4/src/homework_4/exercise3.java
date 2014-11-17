@@ -80,17 +80,31 @@ public class exercise3 {
 	}
 	
 	
+	public static double[] getChi2(int df, int numberOfSamples)
+	{
+		MRG32k3a prng= new MRG32k3a();
+		double[] result = new double[numberOfSamples];
+		Distribution chi2 = new ChiSquareDist(df);
+		for(int i = 0; i < numberOfSamples; i++)
+		{
+			result[i] = chi2.inverseF(prng.nextDouble());
+		}
+		return result;
+	}
+	
+	
+	
 	/**
 	 * generate Chi2 confidence intervals on generate samples ~ Exponential(1)
 	 * @param experiments number of independent experiments to generate
 	 * @param n size of each experiment
 	 * @return Chi2 confidence intervals (low, high)
 	 */
-	public static double[][] generateConfidenceIntervals(int experiments, int n)
+	public static double[][] generateCIChi2(int experiments, int n)
 	{
 		RandomStream prng = new MRG32k3a();
 		Distribution dist = new ExponentialDist(1);
-		double[][] intervals = new double[experiments][2];
+		double[][] intervals = new double[experiments][3];
 		
 		for(int experiment = 0; experiment < experiments; experiment++)
 		{
@@ -102,6 +116,7 @@ public class exercise3 {
 			// left = (n-1)s^2 / (chi2 alpha/2) 
 			// right = (n-1)s^2 / (chi2 1 - alpha/2)
 			stats.confidenceIntervalVarianceChi2(0.95, intervals[experiment]);
+			intervals[experiment][2] = stats.variance();
 		}
 		return intervals;
 	}
@@ -110,11 +125,13 @@ public class exercise3 {
 	public static double[] getStats(double[][] arr)
 	{
 		Tally width = new Tally("width of the intervals");
-		Tally covers1 = new Tally("bernoulli variable,interval covers true value of variance");
+		Tally covers1 = new Tally("interval covers true value of variance");
+		Tally centralValues = new Tally("central values");
 		for(int i = 0; i < arr.length; i++)
 		{
 			width.add(arr[i][1] - arr[i][0]);
 			covers1.add((1.0 <= arr[i][1] && 1.0 >= arr[i][0]) ? 1.0 : 0.0);
+			centralValues.add((arr[i][0] + arr[i][1]) / 2.0);
 		}
 		// E[Exponential(1)] = 1, Var[Exponential(1)] = 1
 		// center and radius of the student confidence interval
@@ -122,56 +139,53 @@ public class exercise3 {
 		width.confidenceIntervalStudent(0.95, centerAndRadiusW);
 		double[] centerAndRadiusP = new double[2];
 		covers1.confidenceIntervalStudent(0.95, centerAndRadiusP);
-		// E[W], CI 95% chi2 E[W], p, CI 95% chi2 p]
+		// E[W], CI 95% chi2 E[W], p, CI 95% chi2 p, E[centralValues]]
 		return new double[] {centerAndRadiusW[0], centerAndRadiusW[1],
-							 centerAndRadiusP[0], centerAndRadiusP[1]};
+							 centerAndRadiusP[0], centerAndRadiusP[1], centralValues.average()};
 		
 	}
 	
 	
 	
-	public static double[] getVarianceBootstrap(double[] data, RandomStream prng)
+	public static double[] getVarianceBootstrap(double[] data, RandomStream prng, int bootstrapSize)
 	{
-		double[] result = new double[2];
-		double[] variances = new double[1000];
-		for(int i = 0; i < 1000; i++)
+		double[] result = new double[3];
+		double[] variances = new double[bootstrapSize];
+		for(int i = 0; i < bootstrapSize; i++)
 		{
 			double[] newArr = sampleWithReplacement(data, prng);
 			variances[i] = getVariance(newArr);
 		}
 		Arrays.sort(variances);
-		// left value = sorted variances[25]
-		System.out.println("mv " + getMean(variances));
-		result[0] = variances[25];
-		result[1] = variances[975];
+		int leftIndex = (int)(0.025 * bootstrapSize);
+		int rightIndex = (int)(0.975 * bootstrapSize);
+		result[0] = variances[leftIndex];
+		result[1] = variances[rightIndex];
+		result[2] = getMean(variances);
 		return result;
 	}
 	
 	
-	public static double[][] generateCIBootstrap()
+	public static double[][] generateCIBootstrap(int numberOfExperiments, int experimentSize, int bootstrapSize)
 	{
 		RandomStream prng = new MRG32k3a();
-		Distribution dist = new ExponentialDist(1);
-		double[][] intervals = new double[1000][2];
+		Distribution exponentialDist = new ExponentialDist(1);
+		double[][] intervals = new double[numberOfExperiments][2];
 		
 		// step 1 1000 independent experiments
-		for(int i = 0; i < 1000; i++)
+		for(int i = 0; i < numberOfExperiments; i++)
 		{
 			// step 2 generate random variables and calculate their confidence interval
-			double[] sample = new double[100];
-			for(int j = 0; j < 100 ; j++)
+			double[] sample = new double[experimentSize];
+			for(int j = 0; j < experimentSize ; j++)
 			{
-				sample[j] = dist.inverseF(prng.nextDouble());
+				sample[j] = exponentialDist.inverseF(prng.nextDouble());
 			}
 			
-			intervals[i] = getVarianceBootstrap(sample, prng);
+			intervals[i] = getVarianceBootstrap(sample, prng, bootstrapSize);
 		}
 		return intervals;
 	}
-
-
-
-
 
 
 	/**
@@ -204,7 +218,7 @@ public class exercise3 {
 	{
 		// a 1000 times, generate n = 100 variables~Exponential(1)
 		assert n>0;
-		double[][] confidenceIntervalsChi2 = generateConfidenceIntervals(1000, n);
+		double[][] confidenceIntervalsChi2 = generateCIChi2(1000, n);
 		return getStats(confidenceIntervalsChi2);
 	}
 
@@ -223,40 +237,81 @@ public class exercise3 {
 	}
 	public static void main(String[] args)
 	{
-		double[][] data1 = generateConfidenceIntervals(1000, 100);
-		double[][] data2 = generateConfidenceIntervals(1000, 1000);
-		double[][] data3 = generateCIBootstrap();
+		final int size1 = 100;
+		final int size2 = 1000;
 
+		double t1a = System.currentTimeMillis();
+		double[][] data1 = generateCIChi2(1000, size1);
+		double t1b = System.currentTimeMillis();
+		double t1 = ((t1b - t1a) / 1000.0);
+	
+		double t2a = System.currentTimeMillis();
+		double[][] data2 = generateCIChi2(1000, size2);
+		double t2b = System.currentTimeMillis();
+		double t2 = ((t2b - t2a) / 1000.0);
+		
+		double t3a = System.currentTimeMillis();
+		double[][] data3 = generateCIBootstrap(1000, size1, 1000);
+		double t3b = System.currentTimeMillis();
+		double t3 = ((t3b - t3a) / 1000.0);
+		
+		double t4a = System.currentTimeMillis();
+		double[][] data4 = generateCIBootstrap(1000, size2, 1000);
+		double t4b = System.currentTimeMillis();
+		double t4 = ((t4b - t4a) / 1000.0);
+		
 		double[] left1 = new double[data1.length];
 		double[] right1 = new double[data1.length];
+		double[] center1 = new double[data1.length];
 
 		double[] left2 = new double[data2.length];
-		double[] right2 = new double[data1.length];
+		double[] right2 = new double[data2.length];
+		double[] center2 = new double[data2.length];
 		
-		double[] left3 = new double[data1.length];
-		double[] right3 = new double[data1.length];
+		double[] left3 = new double[data3.length];
+		double[] right3 = new double[data3.length];
+		double[] center3 = new double[data3.length];
 		
+		double[] left4 = new double[data4.length];
+		double[] right4 = new double[data4.length];
+		double[] center4 = new double[data4.length];
 		
 		for(int i = 0; i < data1.length; i++)
 		{
 			left1[i] = data1[i][0];
 			right1[i] = data1[i][1];
+			center1[i] = data1[i][2];
 			
 			left2[i] = data2[i][0];
 			right2[i] = data2[i][1];
+			center2[i] = data2[i][2];
 			
 			left3[i] = data3[i][0];
 			right3[i] = data3[i][1];
+			center3[i] = data3[i][2];
+			
+			left4[i] = data4[i][0];
+			right4[i] = data4[i][1];
+			center4[i] = data4[i][2];
 		}
 		
-		HistogramChart chart1 = new HistogramChart("A", "value", "number of samples", left1, right1);
-		HistogramChart chart2 = new HistogramChart("B", "value", "number of samples", left2, right2);
-		HistogramChart chart3 = new HistogramChart("C", "value", "number of samples", left3, right3);
+		HistogramChart chi2Chart99 = new HistogramChart("Chi2 distribution, 99 degrees of freedom", "values", "number of occurrences", getChi2(99, 1000));
+		HistogramChart chi2Chart999 = new HistogramChart("Chi2 distribution, 999 degrees of freedom", "values", "number of occurrences", getChi2(999, 1000));
+		HistogramChart chart1 = new HistogramChart("Chi2, size of sample = 100, done in " + t1 + "s", "left, right and center values", "number of occurrences", center1,left1, right1);
+		HistogramChart chart2 = new HistogramChart("Chi2, size of sample = 1000, done in " + t2 + "s", "left, right and center values", "number of occurrences", center2, left2, right2);
+		HistogramChart chart3 = new HistogramChart("Bootstrap, size of sample = 100, done in " + t3 + "s", "left, right and center values", "number of occurrences", center3, left3, right3);
+		HistogramChart chart4 = new HistogramChart("Bootstrap, size of sample = 1000, done in " + t4 + "s", "left, right and center values", "number of occurrences", center4, left4, right4);
+		
 		chart1.view(800, 500);
 		chart2.view(800, 500);
 		chart3.view(800, 500);
+		chart4.view(800, 500);
+		chi2Chart99.view(800, 500);
+		chi2Chart999.view(800, 500);
+		
 		printArray(getStats(data1));
 		printArray(getStats(data2));
 		printArray(getStats(data3));
+		printArray(getStats(data4));
 	}
 }
