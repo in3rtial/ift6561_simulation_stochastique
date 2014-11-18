@@ -7,7 +7,7 @@ Confidence intervals for the variance of 100 samples (chi-square).
 
 
 ![](img/chi2_100.png)
-
+![](img/chi2_99.png)
 
 **Empirical values obtained**
 
@@ -30,6 +30,7 @@ Confidence interval for the variance of 1000 samples
 
 
 ![](img/chi2_1000.png)
+![](img/chi2_999.png)
 
 
 
@@ -53,6 +54,9 @@ basically the same (about 69%).
 
 
 Basically, you get a better precision, but the values tend to the same and the coverage isn't great.
+
+The 
+
 
 Let's see what happens when the bootstrap procedure is used to get the confidence interval.
 

@@ -194,11 +194,11 @@ public class exercise2 {
 		HistogramChart chart = new HistogramChart("naive method", null, null, a);
 		chart.view(800, 500);
 		double[] b = threePieces(100000);
-		HistogramChart chart2 = new HistogramChart("3 breakpoints method", null, null, b);
+		HistogramChart chart2 = new HistogramChart("3 pieces method", null, null, b);
 		chart2.view(800, 500);
 		
 		double[] c = fivePieces(100000);
-		HistogramChart chart3 = new HistogramChart("5 breakpoints method", null, null, b);
+		HistogramChart chart3 = new HistogramChart("5 pieces method", null, null, b);
 		chart3.view(800, 500);
 	}
 	
@@ -222,15 +222,15 @@ public class exercise2 {
 		}
 		
 
-		XYChart naiveTimes = new XYLineChart("naive algorithm running time", "number of samples", "time", naive);
+		XYChart naiveTimes = new XYLineChart("naive algorithm running time","sample size", "running time (seconds)", naive);
 		naiveTimes.setAutoRange00(true, true); // Axes pass through (0,0)
 		naiveTimes.view(800,500);
 		
-		XYChart threePiecesChart = new XYLineChart("3 pieces algorithm running time", "number of samples", "time", threePieces);
+		XYChart threePiecesChart = new XYLineChart("3 pieces algorithm running time", "sample size", "running time (seconds)", threePieces);
 		threePiecesChart.setAutoRange00(true, true); // Axes pass through (0,0)
 		threePiecesChart.view(800,500);
 		
-		XYChart fivePiecesChart = new XYLineChart("5 pieces algorithm running time", "number of samples", "time", fivePieces);
+		XYChart fivePiecesChart = new XYLineChart("5 pieces algorithm running time", "sample size", "running time (seconds)", fivePieces);
 		fivePiecesChart.setAutoRange00(true, true); // Axes pass through (0,0)
 		fivePiecesChart.view(800,500);
 		

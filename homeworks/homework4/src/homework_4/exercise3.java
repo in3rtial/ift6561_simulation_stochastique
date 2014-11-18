@@ -95,7 +95,7 @@ public class exercise3 {
 	
 	
 	/**
-	 * generate Chi2 confidence intervals on generate samples ~ Exponential(1)
+	 * generate Chi2 confidence intervals on variance of samples ~ Exponential(1)
 	 * @param experiments number of independent experiments to generate
 	 * @param n size of each experiment
 	 * @return Chi2 confidence intervals (low, high)
@@ -207,34 +207,8 @@ public class exercise3 {
 			
 		}
 	}
-
-
 	
-	/**
-	 * 5.6 part 1
-	 * @return
-	 */
-	public static double[] run(int n)
-	{
-		// a 1000 times, generate n = 100 variables~Exponential(1)
-		assert n>0;
-		double[][] confidenceIntervalsChi2 = generateCIChi2(1000, n);
-		return getStats(confidenceIntervalsChi2);
-	}
-
-
-	public static void seeDiff(int n, int m)
-	{
-		Distribution chi2 = new ChiSquareDist(n);
-		MRG32k3a prng = new MRG32k3a();
-		double[] data =new double[m];
-		for(int i = 0; i < m ; i++)
-		{
-			data[i] = chi2.inverseF(prng.nextDouble());
-		}
-		HistogramChart c = new HistogramChart(null, null, null,data);
-		c.view(800, 500);
-	}
+	
 	public static void main(String[] args)
 	{
 		final int size1 = 100;
