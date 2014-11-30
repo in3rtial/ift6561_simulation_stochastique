@@ -1,0 +1,28 @@
+package homework5;
+
+import java.io.IOException;
+
+import umontreal.iro.lecuyer.stat.Tally;
+
+public class IRN_Simul {
+
+	public static void main(String[] args) throws IOException
+	{
+	// 3- IRN where Bi is fixed at 1
+	// the busyness of each period is the same and
+	// the generators stay untouched
+	
+      CallCenter cc = new CallCenter ("CallCenter.dat");
+      CallCenter cc10 = new CallCenter("CallCenter_d10.dat");
+      CallCenter cc1 = new CallCenter("CallCenter_d1.dat");
+      CallCenter cc01 = new CallCenter("CallCenter_d01.dat");
+      
+      for (int i = 0; i < 1000; i++)  cc.simulateOneDay(1.0);
+      System.out.println ("\nNum. calls expected = " + cc.nCallsExpected +"\n");
+      for (int i = 0; i < cc.allTal.length; i++) {
+         cc.allTal[i].setConfidenceIntervalStudent();
+         cc.allTal[i].setConfidenceLevel (0.90);
+      }
+      System.out.println (Tally.report ("CallCenter:", cc.allTal));
+	}
+}

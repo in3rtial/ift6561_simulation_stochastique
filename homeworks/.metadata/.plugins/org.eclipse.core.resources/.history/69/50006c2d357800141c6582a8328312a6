@@ -1,0 +1,141 @@
+package homework5;
+
+import java.io.IOException;
+
+import umontreal.iro.lecuyer.stat.Tally;
+
+
+public class ex1 {
+	// exercise 6.1
+	
+	// example section 6.2.2
+	// compare
+	
+	// 
+	// 2- CRN without synchronization
+	// 3- IRN where Bi is fixed at 1
+	
+	// try with 3 values of delta
+	
+	
+	// we'll try with the same 3 values of delta
+	public static void part1(int num) throws IOException
+	{
+		// CRN with (a+c) synchronization
+		// initialize the call centers
+		CallCenterCRNac cc1 = new CallCenterCRNac("CallCenter.dat");
+		CallCenterCRNac cc2 = new CallCenterCRNac("CallCenter.dat");
+		CallCenterCRNac cc3 = new CallCenterCRNac("CallCenter.dat");
+		CallCenterCRNac cc4 = new CallCenterCRNac("CallCenter.dat");
+
+		// modify the beta parameters for cc2 - cc4
+		cc2.beta = 1.0/(100.0 - 10.0);
+		cc3.beta = 1.0/(100.0 -1.0);
+		cc4.beta = 1.0/(100.0 -0.1);
+		
+		// simulate 1000 days with Bi = 1.0
+		for (int i = 0; i < num; i++) {
+			cc1.simulateOneDay();
+			cc2.simulateOneDay();
+			cc3.simulateOneDay();
+			cc4.simulateOneDay();
+		}
+
+		// extract the data from the internal tallies
+		double[] delta_2_1 = diff(cc2.statGoodQoS.getArray(),
+				cc1.statGoodQoS.getArray());
+		double[] delta_3_1 = diff(cc3.statGoodQoS.getArray(),
+				cc1.statGoodQoS.getArray());
+		double[] delta_4_1 = diff(cc4.statGoodQoS.getArray(),
+				cc1.statGoodQoS.getArray());
+
+		// add the extracted data to new diff tallies
+		Tally[] diffTallies = new Tally[3];
+		Tally d2 = diffTallies[0] = new Tally("delta = 10");
+		Tally d3 = diffTallies[1] = new Tally("delta = 1");
+		Tally d4 = diffTallies[2] = new Tally("delta = 0.1");
+		for (int i = 0; i < delta_2_1.length; i++)
+		{
+			d2.add(delta_2_1[i]);
+			d3.add(delta_3_1[i]);
+			d4.add(delta_4_1[i]);
+		}
+		
+		for(int i = 0; i < diffTallies.length; i++)
+		{
+			int n = diffTallies[i].numberObs();
+			double avg = diffTallies[i].average();
+			double var = diffTallies[i].variance();
+			System.out.println("n = "+n+"; avg = "+avg+"; var = "+var+";");
+		}
+		System.out.println(cc1.statGoodQoS.report());
+		System.out.println(cc2.statGoodQoS.report());
+		System.out.println(cc3.statGoodQoS.report());
+		System.out.println(cc4.statGoodQoS.report());
+	}
+	public static double[] diff(double[] arr1, double[] arr2)
+	{
+		// arr 1 - arr 2
+		double[] result = new double[arr1.length];
+		for(int i=0; i<arr1.length; i++)
+			result[i] = arr1[i] - arr2[i];
+		return result;
+	}
+	
+	public static void part3(int num) throws IOException {
+		// initialize the call centers
+		CallCenterMod cc1 = new CallCenterMod("CallCenter.dat");
+		CallCenterMod cc2 = new CallCenterMod("CallCenter.dat");
+		CallCenterMod cc3 = new CallCenterMod("CallCenter.dat");
+		CallCenterMod cc4 = new CallCenterMod("CallCenter.dat");
+
+		// modify the beta parameters for cc2 - cc4
+		cc2.beta = 1.0/(100.0 - 10.0);
+		cc3.beta = 1.0/(100.0 -1.0);
+		cc4.beta = 1.0/(100.0 -0.1);
+		
+		// simulate 1000 days with Bi = 1.0
+		for (int i = 0; i < num; i++) {
+			cc1.simulateOneDay();
+			cc2.simulateOneDay();
+			cc3.simulateOneDay();
+			cc4.simulateOneDay();
+		}
+
+		// extract the data from the internal tallies
+		double[] delta_2_1 = diff(cc2.statGoodQoS.getArray(),
+				cc1.statGoodQoS.getArray());
+		double[] delta_3_1 = diff(cc3.statGoodQoS.getArray(),
+				cc1.statGoodQoS.getArray());
+		double[] delta_4_1 = diff(cc4.statGoodQoS.getArray(),
+				cc1.statGoodQoS.getArray());
+
+		// add the extracted data to new diff tallies
+		Tally[] diffTallies = new Tally[3];
+		Tally d2 = diffTallies[0] = new Tally("delta = 10");
+		Tally d3 = diffTallies[1] = new Tally("delta = 1");
+		Tally d4 = diffTallies[2] = new Tally("delta = 0.1");
+		for (int i = 0; i < delta_2_1.length; i++)
+		{
+			d2.add(delta_2_1[i]);
+			d3.add(delta_3_1[i]);
+			d4.add(delta_4_1[i]);
+		}
+		
+		for(int i = 0; i < diffTallies.length; i++)
+		{
+			int n = diffTallies[i].numberObs();
+			double avg = diffTallies[i].average();
+			double var = diffTallies[i].variance();
+			System.out.println("n = "+n+"; avg = "+avg+"; var = "+var+";");
+		}
+		System.out.println(cc1.statGoodQoS.report());
+		System.out.println(cc2.statGoodQoS.report());
+		System.out.println(cc3.statGoodQoS.report());
+		System.out.println(cc4.statGoodQoS.report());
+	}
+
+	public static void main(String[] args) throws IOException {
+		part3(10000);
+	}
+}

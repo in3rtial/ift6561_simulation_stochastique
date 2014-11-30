@@ -1,0 +1,70 @@
+package homework5;
+
+import java.io.IOException;
+
+import umontreal.iro.lecuyer.stat.Tally;
+
+
+public class ex1 {
+	// exercise 6.1
+	
+	// example section 6.2.2
+	// compare
+	
+	// 1- CRN with (a+c) synchronization
+	// 2- CRN without synchronization
+	// 3- IRN where Bi is fixed at 1
+	
+	// try with 3 values of delta
+	
+	
+	// we'll try with the same 3 values of delta
+	
+	public static double[] diff(double[] arr1, double[] arr2)
+	{
+		// arr 1 - arr 2
+		double[] result = new double[arr1.length];
+		for(int i=0; i<arr1.length; i++)
+			result[i] = arr1[i] - arr2[i];
+		return result;
+	}
+	
+	public static void part3() throws IOException {
+		// initialize the call centers
+		CallCenterMod cc1 = new CallCenterMod("CallCenter.dat");
+		CallCenterMod cc2 = new CallCenterMod("CallCenter_d10.dat");
+		CallCenterMod cc3 = new CallCenterMod("CallCenter_d1.dat");
+		CallCenterMod cc4 = new CallCenterMod("CallCenter_d01.dat");
+
+		// simulate 1000 days with the different parameters
+		for (int i = 0; i < 1000; i++) {
+			cc1.simulateOneDay();
+			cc2.simulateOneDay();
+			cc3.simulateOneDay();
+			cc4.simulateOneDay();
+		}
+
+		// extract the data
+		double[] delta1_2 = diff(cc1.statGoodQoS.getArray(),
+				cc2.statGoodQoS.getArray());
+		double[] delta1_3 = diff(cc1.statGoodQoS.getArray(),
+				cc3.statGoodQoS.getArray());
+		double[] delta1_4 = diff(cc1.statGoodQoS.getArray(),
+				cc4.statGoodQoS.getArray());
+
+		for (int i = 0; i < delta1_2.length; i++) {
+
+		}
+		System.out.println("\nNum. calls expected = " + cc.nCallsExpected
+				+ "\n");
+		for (int i = 0; i < cc.allTal.length; i++) {
+			cc.allTal[i].setConfidenceIntervalStudent();
+			cc.allTal[i].setConfidenceLevel(0.90);
+		}
+		System.out.println(cc.statGoodQoS.report());
+	}
+
+	public static void main(String[] args) throws IOException {
+		part3();
+	}
+}

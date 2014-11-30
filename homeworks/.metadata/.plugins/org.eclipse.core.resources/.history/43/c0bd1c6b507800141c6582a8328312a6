@@ -1,0 +1,48 @@
+package homework5;
+
+import java.io.IOException;
+
+import umontreal.iro.lecuyer.stat.Tally;
+import umontreal.iro.lecuyer.stat.TallyStore;
+
+
+public class ex1 {
+	// exercise 6.1
+	
+	// example section 6.2.2
+	// compare
+	
+	// 
+	// 2- CRN without synchronization
+	
+	// try with 3 values of delta
+	
+	public static void test(int num) throws IOException
+	{
+		
+	}
+	
+	
+	
+	// we'll try with the same 3 values of delta
+	public static void part1(int num) throws IOException
+	{
+		//CRNs with the (a + c) synchronization
+		TallyStore[] results = new TallyStore[3];
+		TallyStore result_10 = results[0] = CallCenterDisc.diff(10., num);
+		TallyStore result_1 = results[1] =  CallCenterDisc.diff(1., num);
+		TallyStore result_01 = results[2] =  CallCenterDisc.diff(0.1, num);
+		
+		for(int i = 0; i < results.length; i++)
+			System.out.println("AVG = "+results[i].average()+ "; VAR = "+results[i].variance());
+		
+	}
+
+	
+	public static void part3(int num) throws IOException {
+	}
+
+	public static void main(String[] args) throws IOException {
+		part1(10);
+	}
+}

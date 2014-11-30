@@ -1,0 +1,106 @@
+package homework5;
+
+import umontreal.iro.lecuyer.rng.*;
+import umontreal.iro.lecuyer.randvar.*;
+import umontreal.iro.lecuyer.probdist.*;
+import umontreal.iro.lecuyer.stat.Tally;
+import umontreal.iro.lecuyer.simevents.*;
+import java.io.*;
+import umontreal.iro.lecuyer.util.PrintfFormat;
+
+// Sensitivity analysis w.r.t. small change in mean service time.
+
+public class CallCenterSens extends CallCenterDisc {
+
+   double gammaBase;    // Original gamma.
+   Tally statService1  = new Tally ("stats on service level for config.1");
+   Tally statDiffIndep = new Tally ("stats on difference with IRNs");
+//   Tally statDiffCRN   = new Tally ("stats on difference with CRNs");
+   Tally statDiffCRNac = new Tally ("stats on difference with CRNs (a + c)");
+   Tally statDiffCRNad = new Tally ("stats on difference with CRNs (a + d)");
+   Tally statDiffCRNbc = new Tally ("stats on difference with CRNs (b + c)");
+   Tally statDiffCRNbd = new Tally ("stats on difference with CRNs (b + d)");
+
+
+   public CallCenterSens (String fileName, double[] b, double[] q, boolean allServices, boolean allPatience) throws IOException {
+      super (fileName, b, q);
+      gammaBase = 1.0;
+   }
+   
+   public void setGamma (double beta) {
+      this.beta = beta;
+
+      genServ = new GammaAcceptanceRejectionGen (genServ.getStream(), new MRG32k3a(),
+         new GammaDist (alpha, beta));
+   }
+
+   
+   // Compares systems with (1/gamma = 1/gammaBase) 
+   // and (1/gamma = 1/gammaBase - delta).
+   // Note: mean service time = alpha/gamma.
+   public void simulateDiffCRN (int n, double delta, Tally statDiffCRN,
+                                boolean allServices, boolean allPatience) {
+
+      double value1, value2;
+      statService1.init();  statDiffIndep.init();  statDiffCRN.init();
+      for (int i=0; i<n; i++) {
+         // Simulation with gammaBase.
+         setGamma (gammaBase);
+         streamB.resetNextSubstream();
+         streamArr.resetNextSubstream();
+         streamPatience.resetNextSubstream();
+         (genServ.getStream()).resetNextSubstream();
+         simulateOneDay ();
+         value1 = (double)nGoodQoS;
+         statService1.add (value1);
+
+         // Simulation with new gamma and CRNs
+         setGamma (gammaBase / (1.0 - delta));
+         streamB.resetStartSubstream();
+         streamArr.resetStartSubstream();
+         streamPatience.resetStartSubstream();
+         (genServ.getStream()).resetStartSubstream();
+         simulateOneDay ();
+         value2 = (double)nGoodQoS;
+         statDiffCRN.add (value2 - value1);
+
+         // Other simulation with new gamma, with IRNs.
+         simulateOneDay ();
+         value2 = (double)nGoodQoS;
+         statDiffIndep.add (value2 - value1);
+      }
+      System.out.println (
+         statService1.reportAndCIStudent (0.9) + 
+         "Var[Delta] = " + 
+         PrintfFormat.f (statService1.variance()) + "\n" +
+         statDiffIndep.reportAndCIStudent (0.9) +
+         "Var[Delta] = " + 
+         PrintfFormat.f (statDiffIndep.variance()) + "\n" +
+         statDiffCRN.reportAndCIStudent (0.9) + 
+         "Var[Delta] = " + 
+         PrintfFormat.f (statDiffCRN.variance()) + "\n" + 
+         "----------------------------------------------------\n");
+   }
+            
+   public void tryCombinations (int n, double delta) {
+      System.out.println ("\n\n***   delta = " + 
+                          PrintfFormat.f(6, 3, delta) + "\n");
+      simulateDiffCRN (n, delta, statDiffCRNac, true, true);
+      simulateDiffCRN (n, delta, statDiffCRNad, true, false);
+      simulateDiffCRN (n, delta, statDiffCRNbc, false, true);
+      simulateDiffCRN (n, delta, statDiffCRNbd, false, false);
+   }
+
+   static public void main (String[] args) throws IOException { 
+      int n = 1000;   // Number of replications.
+      
+      // parameters of the discrete distribution of B (busyness)
+      double[] b = new double[]{0.8, 1.0, 1.2, 1.4};
+      double[] q = new double[]{0.25, 0.55, 0.15, 0.05};
+      
+      CallCenterSens cc = new CallCenterSens("CallCenter.dat", b, q); 
+      // cc.tryCombinations (1000, 0.1);
+      // cc.tryCombinations (1000, 0.01);
+      cc.tryCombinations (10000, 0.001);
+   }
+}
