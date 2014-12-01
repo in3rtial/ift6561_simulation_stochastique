@@ -1,0 +1,34 @@
+package homework5;
+
+import umontreal.iro.lecuyer.randvar.*;
+import umontreal.iro.lecuyer.rng.MRG32k3a;
+import umontreal.iro.lecuyer.probdist.*;
+public class ex4 {
+	public static void main(String[] args)
+	{
+		MRG32k3a prng = new MRG32k3a();
+		GammaGen a = new GammaAcceptanceRejectionGen (prng, 10., 1.0);
+		GammaGen b = new GammaAcceptanceRejectionGen(prng.clone(), 10., 1.1);
+		GammaGen c = new GammaGen(prng.clone(), 10., 1.1);
+		double v1, v2,v3;
+		for(int i = 0; i < 100; i++)
+		{
+			v1= a.nextDouble();
+			v2=b.nextDouble();
+			v3=c.nextDouble();
+			System.out.println(v1 +" " + v2 +" "+ v3 +" "+ v1/v2);
+		}
+		System.out.println("next");
+		
+		prng.resetNextSubstream();
+		
+		double v3 = a.nextDouble();
+		prng.resetStartStream();
+		double u = prng.nextDouble();
+		ErlangDist a1 = new ErlangDist(10, 1.0);
+		double v4 = a1.inverseF(u);
+		System.out.println(v3 + " "+v4);
+		
+		
+	}
+}

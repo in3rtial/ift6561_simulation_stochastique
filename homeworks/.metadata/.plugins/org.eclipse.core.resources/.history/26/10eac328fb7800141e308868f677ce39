@@ -1,0 +1,42 @@
+package homework5;
+
+import umontreal.iro.lecuyer.randvar.*;
+import umontreal.iro.lecuyer.rng.MRG32k3a;
+import umontreal.iro.lecuyer.stat.Tally;
+import umontreal.iro.lecuyer.probdist.*;
+
+public class ex4 {
+	public static void main(String[] args) {
+		// STATEMENT
+		/*
+		 * You are asked to try the control variate suggested in Example 6.18.
+		 * Estimate the variance reduction factor compared with naive Monte
+		 * Carlo by performing n = 10000 simulation runs with the following
+		 * parameters: σ = 0.2, r = 0.08, S(0) = 100, T = 1, K = 100, d = 10,
+		 * and t j = j/10 for j = 1, . . . , d. For the barrier , try = 80, 90,
+		 * and 95. Discuss your results. Can you suggest other ways of reducing
+		 * the variance for this example?
+		 */
+
+		// down-and-out call option with barrier l
+		// X = exp(-rT)max(0, S(T)
+	}
+
+	public static void simulate(double barrier) {
+		int s = 12;
+		// choose the observation times
+		double[] observationTimes = new double[s + 1];
+		observationTimes[0] = 0.0;
+		for (int j = 1; j <= s; j++)
+			observationTimes[j] = (double) j / (double) s;
+		Asian process = new AsianDownAndOut(0.05, 0.5, 100.0, 100.0, s,
+				observationTimes, barrier);
+		Tally statValue = new Tally("Stats on value of Asian option");
+
+		int n = 20000;
+		process.simulateRuns(n, new MRG32k3a(), statValue);
+		statValue.setConfidenceIntervalStudent();
+		System.out.println(statValue.report(0.95, 3));
+	}
+
+}

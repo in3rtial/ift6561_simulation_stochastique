@@ -1,0 +1,39 @@
+package homework5;
+
+public class AsianDownAndOut extends Asian {
+	double barrier;
+	
+	public AsianDownAndOut(double shortRate, double volatility,
+			double strikePrice, double initialPrice, int T,
+			double[] observationTimes, double barrier) {
+		super(shortRate, volatility, strikePrice, initialPrice, T,
+				observationTimes);
+		this.barrier = barrier;
+	}
+	
+	/**
+	 * Computes and returns the discounted option payoff.
+	 * WITH THE DOWN AND OUT BARRIER
+	 * 
+	 * @return payoff of the option
+	 */
+	public double getPayoffDownAndOut() {
+		double value;
+		for (int j = 1; j <= T; j++)
+		{
+			value = Math.exp(logS[j]);
+			if(value < barrier)
+			{
+				return 0.0;
+			}
+		}
+			
+		
+		
+		if (value > strikePrice)
+			return discount * (average - strikePrice);
+		else
+			return 0.0;
+	}
+
+}

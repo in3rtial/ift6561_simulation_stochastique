@@ -7,7 +7,6 @@ package homework5;
 
 import umontreal.iro.lecuyer.randvar.GammaAcceptanceRejectionGen;
 import umontreal.iro.lecuyer.rng.*;
-import umontreal.iro.lecuyer.stat.TallyStore;
 
 import java.io.*;
 
@@ -16,10 +15,13 @@ public class CallCenterDisc extends CallCenterMod {
 	double[] b, q, Q; // Values of B, their probab., and cdf.
 	double meanB; // Mean of B.
 	double varianceB; // Variance of B.
+	MRG32k3a streamServ; // the generator for genServ
 
-	public CallCenterDisc(String fileName, double[] b, double[] q)
+	public CallCenterDisc(String fileName, double[] b, double[] q, double beta)
 			throws IOException {
 		super(fileName);
+		
+		this.beta = beta; // modify the beta, whatever it was
 		this.b = b;
 		this.q = Q;
 		this.Q = new double[b.length];
@@ -32,7 +34,32 @@ public class CallCenterDisc extends CallCenterMod {
 			mean2 += b[j] * b[j] * q[j];
 		}
 		this.varianceB = mean2 - meanB * meanB;
+		
+		this.streamServ = new MRG32k3a();
+
+		this.genServ = new GammaAcceptanceRejectionGen(streamServ, alpha,beta);
 	}
+	
+	public MRG32k3a getRNG1()
+	{
+		return this.streamB;
+	}
+	public MRG32k3a getRNG2()
+	{
+		return this.streamArr;
+	}
+	
+	public MRG32k3a getRNG3()
+	{
+		return this.streamPatience;
+	}
+	
+	public MRG32k3a getRNG4()
+	{
+		return this.streamServ;
+	}
+	
+	
 
 	public double meanOfB() {
 		return meanB;
@@ -52,49 +79,96 @@ public class CallCenterDisc extends CallCenterMod {
 		simulateOneDay(b[t], allServices, allPatience);
 	}
 	
-	public void jumpRNG()
+	public void jumpRNG(int n)
 	{
-        this.streamB.resetNextSubstream();
-        this.streamArr.resetNextSubstream();
-        this.streamPatience.resetNextSubstream();
-        (this.genServ.getStream()).resetNextSubstream();
+		for(int _ =0; _<n; _++)
+		{
+	        this.streamB.resetNextSubstream();
+	        this.streamArr.resetNextSubstream();
+	        this.streamPatience.resetNextSubstream();
+	        this.streamServ.resetNextSubstream();
+		}
+	}
+	
+	public double[] outputRNG()
+	{
+		return new double[]{this.streamB.nextDouble(), this.streamArr.nextDouble(),
+							this.streamPatience.nextDouble(), this.streamServ.nextDouble()};
 	}
 
-	public static TallyStore diff(double delta, int n) throws IOException
+	public static boolean testRNGs() throws IOException
 	{
+		boolean result=true;
 		double[] b = new double[] { 0.8, 1.0, 1.2, 1.4 };
 		double[] q = new double[] { 0.25, 0.55, 0.15, 0.05 };
-		CallCenterDisc cc1 = new CallCenterDisc("CallCenter.dat", b, q);
-		CallCenterDisc cc2 = new CallCenterDisc("CallCenter.dat", b, q);
-		cc2.beta = (1.0 / (100.0 - delta));
-		cc2.genServ = new GammaAcceptanceRejectionGen (cc2.streamB.clone(), cc2.alpha, cc2.beta);
-		TallyStore statDiffCRN = new TallyStore();
-
-		double value1, value2;
+		CallCenterDisc cc1 = new CallCenterDisc("CallCenter.dat", b, q, (1.0/100.0));
+		CallCenterDisc cc2 = new CallCenterDisc("CallCenter.dat", b, q, (1.0/100.0));
 		
-		for (int i = 0; i < n; i++)
-		{
-			cc1.jumpRNG();
-			//System.out.println(cc1.streamArr.nextDouble());
-			cc1.simulateOneDay(false, false);
+		boolean synchronize = true;
+		long[] seedArr = new long[]{ 1, 12345, 12345, 12345, 12345, 12345 };
+		long[] seedB = new long[]{ 2, 12345, 12345, 12345, 12345, 12345 };
+		long[] seedPatience=  new long[]{ 3, 12345, 12345, 12345, 12345, 12345 };
+		long[] seedServ = new long[]{ 4, 12345, 12345, 12345, 12345, 12345 };
+		// fix the generators
+		if (synchronize == true) {
+			cc1.getRNG1().setSeed(seedB);
+			cc2.getRNG1().setSeed(seedB);
 			
-			value1 = cc1.nGoodQoS;
+			cc1.getRNG2().setSeed(seedArr);
+			cc2.getRNG2().setSeed(seedArr);
 			
-			cc2.jumpRNG();
-			//System.out.println(cc2.streamArr.nextDouble());
-			cc2.simulateOneDay(false, false);
-
-			value2 = cc2.nGoodQoS;
-			//System.out.println("value 1 = " +value1 + " value 2 = " + value2);
+			cc1.getRNG3().setSeed(seedServ);
+			cc2.getRNG3().setSeed(seedServ);
 			
-			statDiffCRN.add(value2 - value1);
+			cc1.getRNG4().setSeed(seedPatience);
+			cc2.getRNG4().setSeed(seedPatience);
 		}
-		return statDiffCRN;
+		
+		double b1, b2, a1, a2, p1, p2, s1,s2;
+		for(int i = 0 ; i < 100; i++)
+		{
+			/*
+			a1=cc1.streamArr.nextDouble();
+			a2=cc2.streamArr.nextDouble();
+			
+			b1=cc1.streamB.nextDouble();
+			b2=cc2.streamB.nextDouble();
+			
+			p1=cc1.streamPatience.nextDouble();
+			p2=cc2.streamPatience.nextDouble();
+			
+			s1=cc1.genServ.nextDouble();
+			s2=cc2.genServ.nextDouble();
+			
+			// break immediately in case of problem
+			if(s1!=s2 || a1 != a2 || p1!=p2 || b1!=b2)
+			{
+				System.out.println("problem with prng synchronization");
+				return false;
+			}
+			//System.out.println(a1+" " + a2 +"; "+b1+" "+b2+"; "+p1+" "+p2+"; "+s1+" "+ s2);
+			*/
+			double[] c1 = cc1.outputRNG();
+			double[] c2 = cc2.outputRNG();
+			
+			for(int j = 0; j < c1.length; j++)
+			{
+				if(c1[j] != c2[j])
+					return false;
+			}
+			cc1.simulateOneDay(true, true);
+			cc2.simulateOneDay(true, true);
+			
+			cc1.jumpRNG(1);
+			cc2.jumpRNG(1);
+		}
+		
+		System.out.println("prng are well synchronized");
+		return result;
 	}
 	
 	
 	public static void main(String[] args) throws IOException {
-		
-		System.out.println(diff(10., 10000).report());
+		testRNGs();
 	}
 }

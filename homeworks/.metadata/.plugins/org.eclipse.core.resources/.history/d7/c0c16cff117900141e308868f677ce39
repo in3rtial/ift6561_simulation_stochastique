@@ -1,0 +1,289 @@
+package homework5;
+
+import java.io.IOException;
+
+import umontreal.iro.lecuyer.stat.Tally;
+import umontreal.iro.lecuyer.stat.TallyStore;
+import umontreal.iro.lecuyer.probdist.GammaDist;
+import umontreal.iro.lecuyer.randvar.GammaAcceptanceRejectionGen;
+import umontreal.iro.lecuyer.randvar.GammaGen;
+import umontreal.iro.lecuyer.rng.*;
+
+public class ex1 {
+	// exercise 6.1
+	// STATEMENT
+	// example section 6.2.2
+	// compare
+	
+	// CRN with (a+c) synchronization
+
+	// CRN without synchronization
+	
+	// IRNs with fixed Bi = 1.0
+	// try with 3 values of delta
+	
+
+	public static boolean part1(int numberOfDays) throws IOException
+	{
+		// (a + c) is (true,true)
+		
+		// the deltas we will try
+		double delta[] = new double[]{0., 10., 1., 0.1};
+		
+		// initialize the variables
+		double[] b = new double[] { 0.8, 1.0, 1.2, 1.4 };
+		double[] q = new double[] { 0.25, 0.55, 0.15, 0.05 };
+		
+		long[] seedA = new long[]{ 1, 12345, 12345, 12345, 12345, 12345 };
+		long[] seedB = new long[]{ 2, 12345, 12345, 12345, 12345, 12345 };
+		long[] seedP=  new long[]{ 3, 12345, 12345, 12345, 12345, 12345 };
+		long[] seedS = new long[]{ 4, 12345, 12345, 12345, 12345, 12345 };
+		
+		// initialize simulators and tallies
+		CallCenterDisc[] simulators = new CallCenterDisc[delta.length];
+		
+		TallyStore[] tallies = new TallyStore[delta.length-1];
+		
+		for(int i = 0; i < simulators.length; i++)
+		{
+			simulators[i] = new CallCenterDisc("CallCenter.dat", b, q, (1.0 / (100.0 - delta[i])));
+		}
+		
+		for(int i = 0; i < tallies.length; i++)
+			tallies[i] = new TallyStore("delta = " + delta[i+1]);
+		
+		// get and synchronize their generators
+		for(int i =0 ; i< delta.length; i++)
+		{
+			simulators[i].getRNG1().setSeed(seedB);
+			simulators[i].getRNG2().setSeed(seedA);
+			simulators[i].getRNG3().setSeed(seedS);
+			simulators[i].getRNG4().setSeed(seedP);
+		}
+		
+		double[] gen0Output = simulators[0].outputRNG();
+		for(int i = 1; i < simulators.length; i++)
+		{
+			double[] genOutput = simulators[i].outputRNG();
+			for(int j = 0; j<genOutput.length; j++)
+				if(gen0Output[j] != genOutput[j])
+					return false;
+		}
+		
+		for(int dayIndex = 0; dayIndex < numberOfDays; dayIndex++)
+		{
+			// synchronize the generators
+			for(CallCenterDisc c: simulators)
+				c.jumpRNG(1);
+			
+			// check the synchronization of the generators
+			
+			
+			
+			// simulate the day
+			for(CallCenterDisc sim: simulators)
+				sim.simulateOneDay(true, true);
+			
+			//System.out.println(simulators[0].nGoodQoS);
+			for(int i = 0; i < delta.length - 1; i++)
+			{
+				//System.out.println(simulators[i+1].nGoodQoS);
+				tallies[i].add(simulators[i+1].nGoodQoS - simulators[0].nGoodQoS);
+			}
+
+		}
+		
+		for(Tally t: tallies)
+			System.out.println(t.report());
+		return true;		
+
+		
+	}
+	
+	
+	
+	
+	
+	
+	public static boolean part2(int numberOfDays) throws IOException
+	{
+		// (b + d) with a single stream (streamArr,B, Service, Patience is all the same)
+		
+		// the deltas we will try
+		double delta[] = new double[]{0., 10., 1., 0.1};
+		
+		// initialize the variables
+		double[] b = new double[] { 0.8, 1.0, 1.2, 1.4 };
+		double[] q = new double[] { 0.25, 0.55, 0.15, 0.05 };
+		
+		long[] seed = new long[]{ 1, 12345, 12345, 12345, 12345, 12345 };
+		
+		// initialize simulators and tallies
+		CallCenterDisc[] simulators = new CallCenterDisc[delta.length];
+		
+		TallyStore[] tallies = new TallyStore[delta.length-1];
+		
+		for(int i = 0; i < simulators.length; i++)
+		{
+			simulators[i] = new CallCenterDisc("CallCenter.dat", b, q, (1.0 / (100.0 - delta[i])));
+		}
+		
+		for(int i = 0; i < tallies.length; i++)
+			tallies[i] = new TallyStore("delta = " + delta[i+1]);
+		
+		MRG32k3a[] singleGenerators = new MRG32k3a[delta.length-1];
+		for(int i = 0 ; i < singleGenerators.length; i++)
+		{
+			singleGenerators[i] = new MRG32k3a();
+			singleGenerators[i].setSeed(seed);
+		}
+		
+		// get and reassign their generator (to a single one)
+		for(int i =0 ; i< delta.length; i++)
+		{
+			simulators[i].streamArr = singleGenerators[i];
+			simulators[i].streamPatience = singleGenerators[i];
+			simulators[i].streamGamma = singleGenerators[i];
+			simulators[i].getRNG4().setSeed(seedP);
+		}
+		
+		double[] gen0Output = simulators[0].outputRNG();
+		for(int i = 1; i < simulators.length; i++)
+		{
+			double[] genOutput = simulators[i].outputRNG();
+			for(int j = 0; j<genOutput.length; j++)
+				if(gen0Output[j] != genOutput[j])
+					return false;
+		}
+		
+		for(int dayIndex = 0; dayIndex < numberOfDays; dayIndex++)
+		{
+			// synchronize the generators
+			for(CallCenterDisc c: simulators)
+				c.jumpRNG(1);
+			
+			// check the synchronization of the generators
+			
+			
+			
+			// simulate the day
+			for(CallCenterDisc sim: simulators)
+				sim.simulateOneDay(true, true);
+			
+			//System.out.println(simulators[0].nGoodQoS);
+			for(int i = 0; i < delta.length - 1; i++)
+			{
+				//System.out.println(simulators[i+1].nGoodQoS);
+				tallies[i].add(simulators[i+1].nGoodQoS - simulators[0].nGoodQoS);
+			}
+
+		}
+		
+		for(Tally t: tallies)
+			System.out.println(t.report());
+		return true;		
+
+		
+	}
+	
+/*	
+	public static TallyStore diffIRN(double delta, int n) throws IOException
+	{
+		double[] b = new double[] { 0.8, 1.0, 1.2, 1.4 };
+		double[] q = new double[] { 0.25, 0.55, 0.15, 0.05 };
+		CallCenterDisc cc1 = new CallCenterDisc("CallCenter.dat", b, q, (1.0/100.0), false);
+		CallCenterDisc cc2 = new CallCenterDisc("CallCenter.dat", b, q,(1.0 / (100.0 - delta)), false);
+		TallyStore statDiff = new TallyStore();
+		double value1, value2;
+		
+
+		
+		
+		
+		return statDiff;
+	}
+	
+	
+	public static TallyStore diffCRN(double delta, int n, boolean ab, boolean cd, boolean fixed) throws IOException
+	{
+		double[] b = new double[] { 0.8, 1.0, 1.2, 1.4 };
+		double[] q = new double[] { 0.25, 0.55, 0.15, 0.05 };
+		CallCenterDisc cc1 = new CallCenterDisc("CallCenter.dat", b, q, (1.0/100.0), true);
+		CallCenterDisc cc2 = new CallCenterDisc("CallCenter.dat", b, q, (1.0 / (100.0 - delta)), true);
+		
+		TallyStore statDiffCRN = new TallyStore();
+
+		double value1, value2;
+		
+		for (int i = 0; i < n; i++)
+		{
+			cc1.jumpRNG(1);
+			//System.out.println(cc1.streamArr.nextDouble());
+			if(fixed==true)
+				cc1.simulateOneDay(1., ab, cd);
+			else
+				cc1.simulateOneDay(ab, cd);
+			value1 = cc1.nGoodQoS;
+			
+			cc2.jumpRNG(1);
+			//System.out.println(cc2.streamArr.nextDouble());
+			if(fixed==true)
+				cc2.simulateOneDay(1., ab, cd);
+			else
+				cc2.simulateOneDay(ab, cd);
+			value2 = cc2.nGoodQoS;
+			//System.out.println("value 1 = " +value1 + " value 2 = " + value2);
+			
+			statDiffCRN.add(value2 - value1);
+		}
+		return statDiffCRN;
+	}
+	
+	
+	
+	
+*/
+
+	public static void part2(int num) throws IOException {
+		// CRN without synchronization
+
+		
+	}
+	
+	public static void part3(int num) throws IOException {
+		// IRNs with Bi fixed at 1
+
+		double[] deltas = new double[] { 10., 1., 0.1 };
+		TallyStore[] results = new TallyStore[3];
+		TallyStore result_10 = results[0] = diffIRN(deltas[0], num);
+		TallyStore result_1 = results[1] = diffIRN(deltas[1], num);
+		TallyStore result_01 = results[2] = diffIRN(deltas[2], num);
+
+		for (int i = 0; i < results.length; i++)
+			System.out.println("AVG = " + results[i].average() + "; VAR = "
+					+ results[i].variance());
+
+	}
+	
+	
+	public static void runAll() throws IOException
+	{
+		System.out.println("CRNs with the (a + c) synchronization");
+		part1(10000);
+		
+		System.out.println("");
+		System.out.println("CRNs without synchronization");
+		
+		
+		System.out.println("");
+		System.out.println("IRNs");
+		part3(10000);
+	}
+
+	public static void main(String[] args) throws IOException {
+		System.out.println(part1(10000));
+		
+
+		
+	}
+}

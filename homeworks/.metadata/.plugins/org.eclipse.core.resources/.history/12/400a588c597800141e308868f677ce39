@@ -1,0 +1,81 @@
+package homework5;
+
+// A subclass of CallCenter where the busyness B has a discrete
+// distribution over small number of values.
+
+//They made me write this against my will.
+
+import umontreal.iro.lecuyer.randvar.GammaAcceptanceRejectionGen;
+import umontreal.iro.lecuyer.rng.*;
+import umontreal.iro.lecuyer.stat.TallyStore;
+
+import java.io.*;
+
+public class CallCenterDisc extends CallCenterMod {
+
+	double[] b, q, Q; // Values of B, their probab., and cdf.
+	double meanB; // Mean of B.
+	double varianceB; // Variance of B.
+
+	public CallCenterDisc(String fileName, double[] b, double[] q)
+			throws IOException {
+		super(fileName);
+		this.b = b;
+		this.q = Q;
+		this.Q = new double[b.length];
+		double sum = 0.0;
+		double mean2 = 0.0;
+		this.meanB = 0.0;
+		for (int j = 0; j < b.length; j++) {
+			Q[j] = sum += q[j];
+			meanB += b[j] * q[j];
+			mean2 += b[j] * b[j] * q[j];
+		}
+		this.varianceB = mean2 - meanB * meanB;
+		
+		// fix the generators
+	    this.streamArr.setPackageSeed(new long[]{1, 12345, 12345, 12345, 12345, 12345});
+	    this.streamB.setPackageSeed(new long[]{2, 12345, 12345, 12345, 12345, 12345});
+	    this.streamPatience.setPackageSeed(new long[]{3, 12345, 12345, 12345, 12345, 12345});
+	    MRG32k3a gammaPrng = new MRG32k3a();
+	    gammaPrng.setPackageSeed(new long[]{3, 12345, 12345, 12345, 12345, 12345});
+	    this.genServ = new GammaAcceptanceRejectionGen (gammaPrng, alpha, beta);
+		
+	}
+
+	public double meanOfB() {
+		return meanB;
+	}
+
+	public double varianceOfB() {
+		return varianceB;
+	}
+
+	// Here, B is generated from cdf Q.
+	public void simulateOneDay(boolean allServices, boolean allPatience) {
+		int t;
+		double u = streamB.nextDouble();
+		// find the index by inversion (sum through the cdf)
+		for (t = 0; (t < Q.length) && (Q[t] < u); t++) {
+		}
+		simulateOneDay(b[t], allServices, allPatience);
+	}
+	
+	public void jumpRNG(int n)
+	{
+		for(int _ =0; _<n; _++)
+		{
+	        this.streamB.resetNextSubstream();
+	        this.streamArr.resetNextSubstream();
+	        this.streamPatience.resetNextSubstream();
+	        (this.genServ.getStream()).resetNextSubstream();
+		}
+	}
+
+
+	
+	
+	public static void main(String[] args) throws IOException {
+		
+	}
+}

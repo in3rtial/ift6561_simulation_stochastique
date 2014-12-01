@@ -1,0 +1,12 @@
+package homework5;
+
+public class ex3 {
+	/*
+	In the call center example of Section 6.2.2, suppose the service times are
+	Erlang(k, γ) and we generate each of them as follows: generate k independent
+	exponentials with mean 1/γ by inversion and add them up. Prove that this
+	method is equivalent to direct inversion of the Erlang (or gamma) distribution
+	function in terms of maximizing the correlation between the service times of
+	corresponding calls in the two systems.
+	*/
+}

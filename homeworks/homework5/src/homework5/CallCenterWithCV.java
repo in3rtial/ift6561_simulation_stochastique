@@ -1,3 +1,5 @@
+package homework5;
+
 import umontreal.iro.lecuyer.simevents.*;
 import umontreal.iro.lecuyer.rng.*;
 import umontreal.iro.lecuyer.randvar.*;

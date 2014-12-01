@@ -2,4 +2,8 @@
 <qualifiedTypeNameHistroy>
 <fullyQualifiedTypeName name="java.lang.System"/>
 <fullyQualifiedTypeName name="umontreal.iro.lecuyer.stat.TallyStore"/>
+<fullyQualifiedTypeName name="umontreal.iro.lecuyer.probdist.GammaDist"/>
+<fullyQualifiedTypeName name="umontreal.iro.lecuyer.rng.MRG32k3a"/>
+<fullyQualifiedTypeName name="umontreal.iro.lecuyer.probdist.ErlangDist"/>
+<fullyQualifiedTypeName name="umontreal.iro.lecuyer.rng.RandomStream"/>
 </qualifiedTypeNameHistroy>

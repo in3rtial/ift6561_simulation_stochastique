@@ -62,11 +62,7 @@ public class CallCenterMod {
       // genServ can be created only after its parameters are read.
       // The acceptance/rejection method is much faster than inversion.
 
-      // fix all the seeds
-      streamArr.setPackageSeed(new long[]{12345, 12345, 12345, 12345, 12345, 12345});
-      streamB.setPackageSeed(new long[]{12345, 12345, 12345, 12345, 12345, 12345});
-      streamPatience.setPackageSeed(new long[]{12345, 12345, 12345, 12345, 12345, 12345});
-      genServ = new GammaAcceptanceRejectionGen (streamB.clone(), alpha, beta);
+      genServ = new GammaAcceptanceRejectionGen (new MRG32k3a(), alpha, beta);
    }
 
    

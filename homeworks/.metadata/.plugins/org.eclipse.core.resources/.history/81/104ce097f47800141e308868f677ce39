@@ -1,0 +1,50 @@
+package homework5;
+
+import umontreal.iro.lecuyer.probdist.GammaDist;
+import umontreal.iro.lecuyer.randvar.GammaAcceptanceRejectionGen;
+import umontreal.iro.lecuyer.randvar.GammaGen;
+import umontreal.iro.lecuyer.rng.MRG32k3a;
+
+public class ex3 {
+	public static void main(String[] args)
+	{
+		MRG32k3a prng = new MRG32k3a();
+		MRG32k3a prng2 = prng.clone();
+		/*
+		GammaGen a = new GammaAcceptanceRejectionGen (prng, 10., 1.0);
+		GammaGen b = new GammaAcceptanceRejectionGen(prng2, 10., 1.1);
+		GammaDist c = new GammaDist(10, 1.0);
+		GammaDist d = new GammaDist(10, 1.1);
+		double v1, v2,v3, v4;
+		
+
+		for(int i = 0; i < 10; i++)
+		{
+			double u = prng.nextDouble();
+			prng.resetStartSubstream();
+			prng2.resetStartSubstream();
+			v1= a.nextDouble();
+			v2=b.nextDouble();
+			v3=c.inverseF(u);
+			v4=d.inverseF(u);
+			System.out.println(v1 +" " + v2 +" "+ v3 +" "+ v4+ " "+ v2/v1+" " +v4/v3);
+			prng.resetNextSubstream();
+			prng2.resetNextSubstream();
+		}
+		System.out.println("next");
+		
+		prng.resetNextSubstream();
+		/*
+		double v3 = a.nextDouble();
+		prng.resetStartStream();
+		double u = prng.nextDouble();
+		ErlangDist a1 = new ErlangDist(10, 1.0);
+		double v4 = a1.inverseF(u);
+		System.out.println(v3 + " "+v4);
+		*/
+		
+		ErlangDist a = new ErlangDist(10, 1.0);
+		ErlangDist b = new ErlangDist(10, 2.0);
+		
+	}
+}
