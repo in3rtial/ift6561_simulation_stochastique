@@ -1,0 +1,276 @@
+package homework5;
+
+import java.io.IOException;
+
+import umontreal.iro.lecuyer.stat.*;
+import umontreal.iro.lecuyer.util.PrintfFormat;
+
+/*
+ * We want to use proportional stratification
+ * which means using the following vector of proportions
+ * { 0.25, 0.55, 0.15, 0.05 } of the values { 0.8, 1.0, 1.2, 1.4 }
+ * e.g.
+ * 
+ * if we make 1000 experiments,
+ * 		0.8 -> 250
+ * 		1.0 -> 550
+ * 		1.2 -> 150
+ * 		1.4 ->  50
+ * 
+ */
+
+
+
+public class ex2 {
+
+	   // To simplify the writing in the code.
+	   public static void println (String s) {
+	      System.out.println (s);
+	   }
+	   private static void println () {
+	      System.out.println ();
+	   }
+	   private static String f (double x) {
+	      return PrintfFormat.f (9, 3, x);
+	   }
+	
+	   
+	   
+	   public static void runAndJump(CallCenterDisc a, CallCenterDisc b, double B_i) throws Error
+	   {
+		   // 1 - ascertain that the generators of both a and b are synchronized
+		   // 2 - run a day for both
+		   // 3 - jump to next substream in both RNGs
+			double[] genAOutput = a.outputRNG();
+			double[] genBOutput = b.outputRNG();
+
+			for (int j = 0; j < genAOutput.length; j++)
+				if (genAOutput[j] != genBOutput[j])
+					throw new Error("RNGs are not well synchronized");
+			
+	   
+	   		a.simulateOneDay(B_i, true, true);
+	   		b.simulateOneDay(B_i, true, true);
+	   		
+	   		a.jumpRNG(1);
+	   		b.jumpRNG(1);
+		   
+	   }
+	   
+	   
+	   
+	   
+	public static void simulateStratifiedCRN(double delta,
+											 int numPilotRuns,
+											 int numRuns) throws IOException
+	{
+		
+		// initialize the variables
+		double[] b = new double[] { 0.8, 1.0, 1.2, 1.4 };
+		double[] q = new double[] { 0.25, 0.55, 0.15, 0.05 };
+		
+		long[] seedA = new long[]{ 1, 12345, 12345, 12345, 12345, 12345 };
+		long[] seedB = new long[]{ 2, 12345, 12345, 12345, 12345, 12345 };
+		long[] seedP=  new long[]{ 3, 12345, 12345, 12345, 12345, 12345 };
+		long[] seedS = new long[]{ 4, 12345, 12345, 12345, 12345, 12345 };
+		
+		// initialize simulators and tallies
+		CallCenterDisc[] simulators = new CallCenterDisc[2];
+		CallCenterDisc cc1 = simulators[0] = new CallCenterDisc("CallCenter.dat", b, q, 1.0/100.0);
+		CallCenterDisc cc2 = simulators[1] = new CallCenterDisc("CallCenter.dat", b, q, (1.0 / (100. - delta)));
+		
+		TallyStore diffTally = new TallyStore("delta  = " + delta);
+		
+		
+		// get and synchronize the generators
+		for(int i =0 ; i< 2; i++)
+		{
+			simulators[i].getRNG1().setSeed(seedB);
+			simulators[i].getRNG2().setSeed(seedA);
+			simulators[i].getRNG3().setSeed(seedS);
+			simulators[i].getRNG4().setSeed(seedP);
+		}
+		
+		
+		// make the pilot runs
+		// X_c,i = X_i − β(A_i − a)
+		
+
+		// Initialize the internal tallies for the pilot runs
+		for(CallCenterDisc c : simulators)
+		{
+			c.statArrivals.init();
+			c.statWaits.init();
+			c.statGoodQoS.init();
+			c.statAbandon.init();
+		}
+		
+		// stats to fill
+		int k = cc1.b.length;
+		double[] a = new double[k];
+		double[] meanAp = new double[k];
+		double[] varAp = new double[k];
+		double[] meanXpilot = new double[k];
+		double[] varXp = new double[k];
+		double[] covarAXp = new double[k];
+		double[] meanDp = new double[k];
+		double[] varDp = new double[k];
+		double[] covarADp = new double[k];
+		double[] varCp = new double[k];
+		double[] varCIp = new double[k];
+
+		double[] betap = new double[k]; // beta fo direct est.
+		double[] betaIp = new double[k]; // beta for indirect est.
+		double[] sigma = new double[k]; // sigma for direct est.
+		double[] sigmaI = new double[k]; // sigma for indirect.
+		double[] sigmaC = new double[k]; // sigma for direct, with CV.
+		double[] sigmaCI = new double[k]; // sigma for indirect, with CV.
+		double[] sigmaBest = new double[k]; // smallest sigma, for given t.
+		double sigmaT = 0.0; // Weighted sum of sigma[t]'s.
+		double sigmaIT = 0.0;
+		double sigmaCT = 0.0;
+		double sigmaCIT = 0.0;
+		double sigmaBestT = 0.0;
+		double varProportional = 0.0; // Strat. with propor. sampling.
+		double varProportionalC = 0.0; // Strat with propor. sampling + CV.
+
+		
+		
+
+		
+		// PILOT RUNS
+		for (int t=0; t<k; t++) {
+	         // Pilot runs with B = b[t].
+	         cc1.statArrivals.init(); // the arrivals must be the same for both cc1 and cc2
+	         cc2.statArrivals.init();
+	         
+	         cc1.statGoodQoS.init();
+	         cc2.statGoodQoS.init();
+	         
+	         
+	         for (int i=0; i < numPilotRuns; i++)
+	        	 runAndJump(cc1, cc2, b[t]); // run the days
+
+	         Tally diff = new Tally("Difference in number of good service");
+	         
+	         
+	         double[] cc1nGQoS = cc1.statGoodQoS.getArray();
+	         double[] cc2nGQoS = cc2.statGoodQoS.getArray();
+	         
+	         for(int i =0 ;i < arrivals.length; i++)
+	        	 diff.add(cc2nGQoS[i] - cc1nGQoS[i]);
+	         
+	         assert(cc2nGQoS.length == cc1nGQoS.length);
+	         
+	         
+	         
+	         a[t] = cc1.nCallsExpected * b[t];   // Num expected calls, given B = b[t].
+	         meanAp[t] = cc1.statArrivals.average();
+	         varAp[t]  = cc1.statArrivals.variance();
+	         
+	         meanXpilot[t] = statGoodQoS.average();
+	         varXp[t]  = statGoodQoS.variance();
+	         covarAXp[t] = statArrivals.covariance (statGoodQoS);
+	         meanDp[t] = meanAp[t] - meanXpilot[t];
+	         varDp[t]  = varAp[t] + varXp[t] - 2.0 * covarAXp[t];
+	         covarADp[t] = varAp[t] - covarAXp[t];
+
+	         // Standard deviations sigma per stratum, needed for optimal n_t's.
+	         // Direct estimation.
+	         sigma[t] = Math.sqrt (varXp[t]);
+	         sigmaT += sigma[t] * q[t];
+	         sigmaBest[t] = sigma[t];
+	         varProportional += varXp[t] * q[t];
+
+	         // Indirect estimation.
+	         sigmaI[t] = Math.sqrt (varDp[t]);
+	         sigmaIT += sigmaI[t] * q[t];
+	         if (sigmaI[t] < sigmaBest[t]) sigmaBest[t] = sigmaI[t];
+
+	         // Direct estimation with control variate.
+	         betap[t] = covarAXp[t] / a[t];
+	         varCp[t] = varXp[t] + betap[t] * 
+	                    (betap[t] * varAp[t] - 2.0 * covarAXp[t]);
+	         sigmaC[t] = Math.sqrt (varCp[t]);
+	         sigmaCT += sigmaC[t] * q[t];
+	         if (sigmaC[t] < sigmaBest[t]) sigmaBest[t] = sigmaC[t];
+	         varProportionalC += varCp[t] * q[t];
+
+	         // Indirect estimation with control variate.
+	         betaIp[t] = -covarADp[t] / a[t];
+	         varCIp[t] = varDp[t] + betaIp[t] * 
+	                     (betaIp[t] * varAp[t] - 2.0 * covarADp[t]);
+	         sigmaCI[t] = Math.sqrt (varCIp[t]);
+	         sigmaCIT += sigmaCI[t] * q[t];
+	         if (sigmaCI[t] < sigmaBest[t]) sigmaBest[t] = sigmaCI[t];
+
+	         sigmaBestT += sigmaBest[t];
+
+	         println ("\n\n**  Pilot runs for t = " + t);
+	         println (" b[t] = E[B|t] = " + f(b[t]) + ",  prob[t] = " + f(q[t]));
+	         println (" meanAp[t] = " + f(meanAp[t]) + ",  Var(A[t]) = " + f(varAp[t]));
+	         println (" meanXpilot[t] = " + f(meanXpilot[t]) + ",  Var(X[t]) = " + f(varXp[t]));
+	         println (" meanDp[t] = " + f(meanDp[t]) + ",  Var(D[t]) = " + f(varDp[t]));
+	         println (" Covar(A[t],X[t]) = " + f(covarAXp[t]));
+	         println (" Covar(A[t],D[t]) = " + f(covarADp[t]));
+	         println ("  betap[t] = " + f(betap[t]) + ",   betaIp[t] = " + f(betaIp[t]));
+	         println ("  varCp[t] = " + f(varCp[t]) + ",   VarCIp[t] = " + f(varCIp[t]));
+	         println ("  sigma = " + f(sigma[t]) + ",  sigmaI = " + f(sigmaI[t]) +
+	                  ", sigmaC = " + f(sigmaC[t]) + ",  sigmaCI = " + f(sigmaCI[t]));
+	         println ("  sigmaBest = " + f(sigmaBest[t]));
+	         println ();
+	      }
+
+
+		
+	}
+	
+	
+	public ex2() {
+		/*
+		 * For the example of Section 6.2.2, implement a combination of the CRN
+		 * methodology with the CV A_i and with stratification based on B_i ,
+		 * with proportional allocation.
+		 */
+		
+		/* PART 1: methodology with the CV A_i 
+		 * 
+		 * Total number of calls arriving on day i can be written as A_i
+		 * 		A_i = X_i + D_i
+		 * 		X_i is the number of calls under the time limit s
+		 * 		D_i is the number of calls over  the time limit s (waited more than s or abandoned)
+		 * 
+		 * a = E[A_i] = 1660
+		 * mu = E[X_i] = E[A_i - D_i] = a - E[D_i]
+		 * 
+		 * mu can be estimated as well by the indirect estimator
+		 * 
+		 * X^{-}_{i, n} = E[A_i] - D^{-}_n = a - 1/n sum(D_i)	
+		 */
+		
+		
+		
+		
+		
+		
+		/* PART 2: stratification based on B_i , with proportional allocation
+		 * 
+		 * 
+		 * 
+		 */
+
+	}
+		
+		
+	
+	public static void main(String[] args) throws IOException
+	{	
+		double delta = 10.;
+		int numPilotRuns = 10;
+		int numRuns = 200;
+		simulateStratifiedCRN(delta,
+				 numPilotRuns,
+				 numRuns);
+	}
+
+}

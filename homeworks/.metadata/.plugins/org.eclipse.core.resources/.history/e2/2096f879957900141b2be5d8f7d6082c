@@ -1,0 +1,48 @@
+package homework5;
+
+public class ex2 {
+
+	public ex2() {
+		/*
+		 * For the example of Section 6.2.2, implement a combination of the CRN
+		 * methodology with the CV A_i and with stratification based on B_i ,
+		 * with proportional allocation.
+		 */
+		
+		/* PART 1: methodology with the CV A_i 
+		 * 
+		 * Total number of calls arriving on day i can be written as A_i
+		 * 		A_i = X_i + D_i
+		 * 		X_i is the number of calls under the time limit s
+		 * 		D_i is the number of calls over  the time limit s (waited more than s or abandoned)
+		 * 
+		 * a = E[A_i] = 1660
+		 * mu = E[X_i] = E[A_i - D_i] = a - E[D_i]
+		 * 
+		 * mu can be estimated as well by the indirect estimator
+		 * 
+		 * X^{-}_{i, n} = E[A_i] - D^{-}_n = a - 1/n sum(D_i)	
+		 */
+		
+		
+		
+		
+		
+		
+		/* PART 2: stratification based on B_i , with proportional allocation
+		 * 
+		 * 
+		 * 
+		 */
+		
+		public void simulateStratifiedCRN(double delta)
+		{
+			
+		}
+		
+		
+		
+		
+	}
+
+}

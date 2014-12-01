@@ -1,0 +1,126 @@
+package homework5;
+
+import java.io.IOException;
+
+import umontreal.iro.lecuyer.stat.TallyStore;
+import umontreal.iro.lecuyer.util.PrintfFormat;
+
+public class ex2 {
+
+	   // To simplify the writing in the code.
+	   public static void println (String s) {
+	      System.out.println (s);
+	   }
+	   private static void println () {
+	      System.out.println ();
+	   }
+	   private static String f (double x) {
+	      return PrintfFormat.f (9, 3, x);
+	   }
+	
+	public static void simulateStratifiedCRN(double delta,
+											 int numPilotRuns,
+											 int numRuns) throws IOException
+	{
+		
+		// initialize the variables
+		double[] b = new double[] { 0.8, 1.0, 1.2, 1.4 };
+		double[] q = new double[] { 0.25, 0.55, 0.15, 0.05 };
+		
+		long[] seedA = new long[]{ 1, 12345, 12345, 12345, 12345, 12345 };
+		long[] seedB = new long[]{ 2, 12345, 12345, 12345, 12345, 12345 };
+		long[] seedP=  new long[]{ 3, 12345, 12345, 12345, 12345, 12345 };
+		long[] seedS = new long[]{ 4, 12345, 12345, 12345, 12345, 12345 };
+		
+		// initialize simulators and tallies
+		CallCenterDisc[] simulators = new CallCenterDisc[2];
+		CallCenterDisc cc1 = simulators[0] = new CallCenterDisc("CallCenter.dat", b, q, 1.0/100.0);
+		CallCenterDisc cc2 = simulators[1] = new CallCenterDisc("CallCenter.dat", b, q, (1.0 / (100. - delta)));
+		
+		TallyStore diffTally = new TallyStore("delta  = " + delta);
+		
+		
+		// get and synchronize the generators
+		for(int i =0 ; i< 2; i++)
+		{
+			simulators[i].getRNG1().setSeed(seedB);
+			simulators[i].getRNG2().setSeed(seedA);
+			simulators[i].getRNG3().setSeed(seedS);
+			simulators[i].getRNG4().setSeed(seedP);
+		}
+		
+		
+		// make the pilot runs for the indirect estimator
+		println("========== SIMULATION WITHOUT STRATIFICATION =========");
+		for (int t = 0; t < b.length; t++)
+			println(" t = " + t + ",  b[t] = " + f(b[t]) + ",  q[t] = " + f(q[t]));
+		
+		double a = cc1.nCallsExpected;
+		
+		// Exact variance on the number of expected calls
+		// Var[A] = E[Var[A|B]] + Var[E[A|B]] = E[aB] + Var[aB].
+		double exactVarA = a * meanB + a * a * varianceB;
+		
+		println(" meanB = " + f(meanB) + ",  varianceB = "
+				+ PrintfFormat.f(9, 7, varianceB));
+		println(" a = " + f(a) + ",  Exact Var[a] = " + f(exactVarA));
+
+		// Initialize the internal tallies
+		this.statArrivals.init();
+		this.statWaits.init();
+		this.statGoodQoS.init();
+		this.statAbandon.init();
+		
+		// Pilot runs to estimate the variances and covariances for beta.
+		for (int i = 0; i < numPilotRuns; i++)
+			simulateOneDay(true, true);
+
+		
+		
+		
+	}
+	
+	
+	public ex2() {
+		/*
+		 * For the example of Section 6.2.2, implement a combination of the CRN
+		 * methodology with the CV A_i and with stratification based on B_i ,
+		 * with proportional allocation.
+		 */
+		
+		/* PART 1: methodology with the CV A_i 
+		 * 
+		 * Total number of calls arriving on day i can be written as A_i
+		 * 		A_i = X_i + D_i
+		 * 		X_i is the number of calls under the time limit s
+		 * 		D_i is the number of calls over  the time limit s (waited more than s or abandoned)
+		 * 
+		 * a = E[A_i] = 1660
+		 * mu = E[X_i] = E[A_i - D_i] = a - E[D_i]
+		 * 
+		 * mu can be estimated as well by the indirect estimator
+		 * 
+		 * X^{-}_{i, n} = E[A_i] - D^{-}_n = a - 1/n sum(D_i)	
+		 */
+		
+		
+		
+		
+		
+		
+		/* PART 2: stratification based on B_i , with proportional allocation
+		 * 
+		 * 
+		 * 
+		 */
+
+	}
+		
+		
+	
+	public static void main(String[] args)
+	{
+		
+	}
+
+}

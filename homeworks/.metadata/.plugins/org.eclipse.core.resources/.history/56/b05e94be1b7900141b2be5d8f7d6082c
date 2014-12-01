@@ -1,0 +1,13 @@
+package homework5;
+
+public class ex2 {
+
+	public ex2() {
+		/*
+		 * For the example of Section 6.2.2, implement a combination of the CRN
+		 * methodology with the CV A_i and with stratification based on B_i ,
+		 * with proportional allocation.
+		 */
+	}
+
+}

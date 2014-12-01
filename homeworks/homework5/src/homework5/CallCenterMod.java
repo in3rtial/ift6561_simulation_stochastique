@@ -24,7 +24,7 @@ public class CallCenterMod {
    double p;              // Probability that patience time is 0.
    double nu;             // Parameter of exponential for patience time.
    double alpha;		  // Parameters of gamma service time distribution.
-   double beta;
+   double gammaGenBeta;
    double s;              // Want stats on waiting times smaller than s.
 
    // Variables
@@ -35,6 +35,7 @@ public class CallCenterMod {
    int nArrivals;         // Number of arrivals today;
    int nAbandon;          // Number of abandonments during the day.
    int nGoodQoS;          // Number of waiting times less than s today.
+   
    double nCallsExpected; // Expected number of calls per day.
 
    Event nextArrival = new Arrival();           // The next Arrival event.
@@ -62,7 +63,7 @@ public class CallCenterMod {
       // genServ can be created only after its parameters are read.
       // The acceptance/rejection method is much faster than inversion.
 
-      genServ = new GammaAcceptanceRejectionGen (new MRG32k3a(), alpha, beta);
+      genServ = new GammaAcceptanceRejectionGen (new MRG32k3a(), alpha, gammaGenBeta);
    }
 
    
@@ -86,7 +87,7 @@ public class CallCenterMod {
       p = scan.nextDouble();           scan.nextLine();
       nu = scan.nextDouble();          scan.nextLine();
       alpha = scan.nextDouble();       scan.nextLine();
-      beta = scan.nextDouble();        scan.nextLine();
+      gammaGenBeta = scan.nextDouble();        scan.nextLine();
       s = scan.nextDouble();
       scan.close();
       Locale.setDefault(loc);
@@ -196,8 +197,8 @@ public class CallCenterMod {
 
       new NextPeriod(0).schedule (openingTime * HOUR);
       Sim.start();
+      
       // Here the simulation is running...
-
       statArrivals.add ((double)nArrivals);
       statAbandon.add ((double)nAbandon / nCallsExpected);
       statGoodQoS.add ((double)nGoodQoS);
@@ -220,6 +221,7 @@ public class CallCenterMod {
          cc.allTal[i].setConfidenceIntervalStudent();
          cc.allTal[i].setConfidenceLevel (0.90);
       }
+      System.out.println(cc.statArrivals.report());
       System.out.println(cc.statGoodQoS.report());
    }
 }
