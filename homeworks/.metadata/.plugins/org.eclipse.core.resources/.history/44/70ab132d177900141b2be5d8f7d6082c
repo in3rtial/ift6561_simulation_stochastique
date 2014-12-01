@@ -215,56 +215,6 @@ public class ex1 {
 
 			// simulate the day
 			for(CallCenterDisc sim: simulators)
-				sim.simulateOneDay(1.0, true, true);
-			
-			//System.out.println(simulators[0].nGoodQoS);
-			for(int i = 0; i < delta.length - 1; i++)
-			{
-				//System.out.println(simulators[i+1].nGoodQoS);
-				tallies[i].add(simulators[i+1].nGoodQoS - simulators[0].nGoodQoS);
-			}
-
-		}
-		
-		for(Tally t: tallies)
-			System.out.println(t.getName() + " avg = " + t.average() +" var = " + t.variance() );
-		return true;		
-
-		
-	}
-	
-	
-	public static boolean part4(int numberOfDays) throws IOException
-	{
-		// IRNs with Bi fixed at 1.0
-		
-		// the deltas we will try
-		double delta[] = new double[]{0., 10., 1., 0.1};
-		
-		// initialize the variables
-		double[] b = new double[] { 0.8, 1.0, 1.2, 1.4 };
-		double[] q = new double[] { 0.25, 0.55, 0.15, 0.05 };
-		
-		
-		// initialize simulators and tallies
-		CallCenterDisc[] simulators = new CallCenterDisc[delta.length];
-		
-		TallyStore[] tallies = new TallyStore[delta.length-1];
-		
-		for(int i = 0; i < simulators.length; i++)
-		{
-			simulators[i] = new CallCenterDisc("CallCenter.dat", b, q, (1.0 / (100.0 - delta[i])));
-		}
-		
-		for(int i = 0; i < tallies.length; i++)
-			tallies[i] = new TallyStore("delta = " + delta[i+1]);
-		
-	
-		for(int dayIndex = 0; dayIndex < numberOfDays; dayIndex++)
-		{
-
-			// simulate the day
-			for(CallCenterDisc sim: simulators)
 				sim.simulateOneDay(true, true);
 			
 			//System.out.println(simulators[0].nGoodQoS);
@@ -295,16 +245,13 @@ public class ex1 {
 		part2(10000);
 		
 		System.out.println("");
-		System.out.println("IRNs (with Bi set to 1.0)");
-		part3(10000);
-		
-		System.out.println("");
 		System.out.println("IRNs");
-		part4(10000);
+		part3(10000);
 	}
 
 	public static void main(String[] args) throws IOException {
-		runAll();
+		//runAll();
+		System.out.println(part3(10000));
 		
 
 		

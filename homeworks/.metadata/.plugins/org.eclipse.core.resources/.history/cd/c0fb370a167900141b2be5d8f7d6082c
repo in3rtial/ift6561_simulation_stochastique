@@ -41,8 +41,8 @@ public class CallCenterMod {
    LinkedList<Call> waitList = new LinkedList<Call>();
 
    MRG32k3a streamB        = new MRG32k3a(); // For B.
-   MRG32k3a streamArr      = new MRG32k3a(); // For arrivals.
-   MRG32k3a streamPatience = new MRG32k3a(); // For patience times.
+   MRG32k3a streamArr      = streamB.clone(); // For arrivals.
+   MRG32k3a streamPatience = streamB.clone(); // For patience times.
    GammaGen genServ;      // For service times; created in readData().
 
    TallyStore[] allTal = new TallyStore [4];

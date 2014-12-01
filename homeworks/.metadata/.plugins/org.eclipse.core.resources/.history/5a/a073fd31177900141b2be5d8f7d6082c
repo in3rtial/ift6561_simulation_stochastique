@@ -295,7 +295,7 @@ public class ex1 {
 		part2(10000);
 		
 		System.out.println("");
-		System.out.println("IRNs (with Bi set to 1.0)");
+		System.out.println("IRNs (with Bi set to 1.0");
 		part3(10000);
 		
 		System.out.println("");
@@ -304,7 +304,8 @@ public class ex1 {
 	}
 
 	public static void main(String[] args) throws IOException {
-		runAll();
+		//runAll();
+		System.out.println(part3(10000));
 		
 
 		
