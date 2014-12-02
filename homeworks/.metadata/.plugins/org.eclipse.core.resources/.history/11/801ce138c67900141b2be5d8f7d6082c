@@ -1,0 +1,206 @@
+package homework5;
+
+import umontreal.iro.lecuyer.probdist.NormalDist;
+import umontreal.iro.lecuyer.rng.MRG32k3a;
+import umontreal.iro.lecuyer.rng.RandomStream;
+import umontreal.iro.lecuyer.stat.Tally;
+
+public class European {
+	protected double sigma; // volatility
+	protected double strikePrice; // s_0
+	protected double T; // total time difference
+	protected double discount; // Discount factor exp(-r * zeta[t]).
+	protected double[] muDelta; // Differences * (r - sigma^2/2).
+	protected double[] sigmaSqrtDelta; // Square roots of differences * sigma.
+	protected double[] logS; // Log of the GBM process: logS[t] = log (S[t]).
+	
+	
+	public European(double r,     // short rate
+					double sigma, // volatility
+					double K,     // strike price
+					double s_0,   // initial price
+					double T,     // total time difference
+					int s         // number of evenly spaced observations
+					)
+	{
+		
+		this.strikePrice = r;
+		this.sigma = sigma;
+		this.T = T;
+		this.discount = Math.exp(-r * T);
+		double mu = r - 0.5 * sigma * sigma;
+		muDelta = new double[s];
+		sigmaSqrtDelta = new double[s];
+		logS = new double[s + 1];
+
+		double[] observationTimes = new double[s+1];
+		observationTimes[0] = 0.0;
+		for (int j = 1; j <= s; j++)
+		{
+			observationTimes[j] = ((double) j / (double)s)* T;
+		}
+		
+		double delta = T / (double)s;
+		for (int j = 0; j < s; j++) {
+			muDelta[j] = mu * delta;
+			sigmaSqrtDelta[j] = sigma * Math.sqrt(delta);
+		}
+
+		logS[0] = Math.log(s_0);
+	}
+	
+	
+	protected void generatePath(RandomStream stream) {
+		for (int j = 0; j < T; j++)
+		{
+			logS[j + 1] = logS[j] + muDelta[j] + sigmaSqrtDelta[j]
+					* NormalDist.inverseF01(stream.nextDouble());
+			
+			System.out.println(Math.exp(logS[j]));
+		}
+	}
+	
+	/**
+	 * standard European call option payoff based on the
+	 * trajectory of the GBM
+	 * @return
+	 */
+	public double getPayOff()
+	{
+		double value = Math.exp(logS[logS.length - 1]);
+		if(value > strikePrice)
+			return discount * (value - strikePrice);
+		else
+			return 0;
+	}
+	
+	/**
+	 * Barrier call option payoff
+	 * 
+	 * @return payoff of the option
+	 */
+	public double getPayoffBarrier(double barrier) {
+		double value = 0; // to get the pesky warning off
+		for (int j = 1; j <= T; j++)
+		{
+			value = Math.exp(logS[j]);
+			if(value < barrier)
+			{
+				return 0.0;
+			}
+		}
+		if (value > strikePrice)
+			return discount * (value - strikePrice);
+		else
+			return 0.0;
+	}
+	
+	
+	
+	/**
+	 * Using Black Scholes equation, find the expected value of the
+	 * European call option.
+	 * @param s_0 initial value
+	 * @param K strike price
+	 * @param r short rate
+	 * @param sigma volatility
+	 * @param T time
+	 * @return expected value
+	 */
+	public static double getExpectedValue(double s_0, double K, double r, double sigma, double T) {
+
+		double d_1 = (Math.log(s_0 / K) + (r + ((sigma*sigma)/2.))*T) / (sigma * Math.sqrt(T));
+		double d_2 = d_1 - (sigma * Math.sqrt(T));
+		double left = s_0 * NormalDist.cdf01(d_1);
+		double right = K * Math.exp(-r*T) * NormalDist.cdf01(d_2);
+		
+		return left - right;
+	}
+	
+	
+
+	
+	
+
+	
+	public double getValue()
+	{
+		// return the value of the european call option
+		double value = Math.exp(logS[logS.length - 1]);
+		if(value > strikePrice)
+		{
+			return value;
+		}
+		else
+		{
+			return strikePrice;
+		}
+	}
+
+	public void simulateRunsBarrier(int n, double barrier, RandomStream stream, Tally stat) {
+		stat.init();
+		for (int i = 0; i < n; i++) {
+			generatePath(stream);
+			stat.add(getPayoffBarrier(barrier));
+		}
+	}
+
+	public void simulateRunsStd(int n, RandomStream stream, Tally stat) {
+		stat.init();
+		for (int i = 0; i < n; i++) {
+			generatePath(stream);
+			stat.add(getPayOff());
+		}
+	}
+	
+	
+	public static boolean testBlackScholes()
+	{
+		// use value from http://www.diva-portal.org/smash/get/diva2:413720/FULLTEXT01.pdf
+
+		double s_0 = 200;
+		double K = 200;
+		double r = 0.2;
+		double sigma = 0.4;
+		double T = 1.;
+		
+		double barrier = 40;
+		double val = European.getExpectedValue(s_0, K, r, sigma, T);
+
+		if(50. < val && val < 51.)
+		{
+				System.out.println("Got correct value of " + val);
+				return true;
+		}
+		return false;
+		
+	}
+	
+	
+	
+	public static void main(String[] args)
+	{
+		//testBlackScholes();
+		
+		
+		double sigma = 0.2;
+		double r = 0.08;
+		double s_0 = 100.;
+		double T = 1.;
+		double K = 100.;
+		int s= 10;
+		double barrier = 0;
+
+		
+		European process = new European(r, sigma, K, s_0, T, s);
+		Tally statValue = new Tally("Stats on value of Asian option");
+
+		int n = 2;
+		process.simulateRunsStd(n,new MRG32k3a(), statValue);
+		statValue.setConfidenceIntervalStudent();
+		System.out.println(statValue.report(0.95, 3));
+		System.out.println("Expected average: "+getExpectedValue(s_0, K, r, sigma, T));
+
+		
+	}
+}

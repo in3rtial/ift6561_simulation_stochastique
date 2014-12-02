@@ -6,7 +6,7 @@ import umontreal.iro.lecuyer.stat.Tally;
 
 public class Asian {
 	protected double strikePrice;
-	protected int T; // Number of observation times.
+	protected double T; // Time difference
 	protected double discount; // Discount factor exp(-r * zeta[t]).
 	protected double[] muDelta; // Differences * (r - sigma^2/2).
 	protected double[] sigmaSqrtDelta; // Square roots of differences * sigma.
@@ -26,11 +26,11 @@ public class Asian {
 	 * @param initialPrice
 	 *            initial price of the asset
 	 * @param T
-	 *            number of observation times
+	 *            Total time
 	 * @param observationTimes
 	 */
 	public Asian(double shortRate, double volatility, double strikePrice,
-			double initialPrice, int T, double[] observationTimes) {
+			double initialPrice, double T, double[] observationTimes) {
 		this.strikePrice = strikePrice;
 		this.T = T;
 		discount = Math.exp(-shortRate * observationTimes[T]);
@@ -71,18 +71,6 @@ public class Asian {
 	}
 
 	/**
-	 * generate a GBM path with parameters from a double[] (fixed)
-	 * 
-	 * @param fixedStream
-	 */
-	protected void generatePath(double[] fixedStream) {
-		assert fixedStream.length == T;
-		for (int j = 0; j < T; j++)
-			logS[j + 1] = logS[j] + muDelta[j] + sigmaSqrtDelta[j]
-					* NormalDist.inverseF01(fixedStream[j]);
-	}
-
-	/**
 	 * Computes and returns the discounted option payoff.
 	 * 
 	 * @return payoff of the option
@@ -111,12 +99,11 @@ public class Asian {
 	 * @param statValue
 	 *            statistics collector
 	 */
-	public void simulateRuns(int n, RandomStream stream, Tally statValue) {
+	private void simulateRuns(int n, RandomStream stream, Tally statValue) {
 		statValue.init();
 		for (int i = 0; i < n; i++) {
 			generatePath(stream);
 			statValue.add(getPayoff());
-			stream.resetNextSubstream();
 		}
 	}
 
@@ -129,13 +116,12 @@ public class Asian {
 	 * @param stream
 	 * @return array of observations
 	 */
-	public double[] simulateRuns(int n, RandomStream stream) {
+	private double[] simulateRuns(int n, RandomStream stream) {
 		double[] observations = new double[n];
 		for (int i = 0; i < n; i++) {
 			generatePath(stream);
 			observations[i] = getPayoff();
 		}
-		stream.resetStartSubstream();
 		return observations;
 	}
 
@@ -145,21 +131,12 @@ public class Asian {
 	 * @param stream
 	 * @return observation
 	 */
-	public double simulateOneRun(RandomStream stream) {
+	private double simulateOneRun(RandomStream stream) {
 		generatePath(stream);
 		return getPayoff();
 	}
 
-	/**
-	 * simulate one run, using a fixed stream.
-	 * 
-	 * @param fixedStream
-	 * @return
-	 */
-	public double simulateOneRunFixed(double[] fixedStream) {
-		generatePath(fixedStream);
-		return getPayoff();
-	}
+
 
 	public static void main(String[] args) {
 		int s = 12;
@@ -171,7 +148,7 @@ public class Asian {
 			observationTimes[j] = (double) j / (double) s;
 		Asian process = new Asian(0.05, 0.5, 100.0, 100.0, s, observationTimes);
 		Tally statValue = new Tally("Stats on value of Asian option");
-
+		
 		int n = 2;
 		process.simulateRuns(n, new MRG32k3a(), statValue);
 		statValue.setConfidenceIntervalStudent();

@@ -1,37 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item value="329" key="DIALOG_WIDTH"/>
-		<item value="194" key="DIALOG_Y_ORIGIN"/>
-		<item value="1306" key="DIALOG_X_ORIGIN"/>
-		<item value="500" key="DIALOG_HEIGHT"/>
+		<item value="349" key="DIALOG_WIDTH"/>
+		<item value="276" key="DIALOG_Y_ORIGIN"/>
+		<item value="520" key="DIALOG_HEIGHT"/>
+		<item value="157" key="DIALOG_X_ORIGIN"/>
 		<item value="1|Ubuntu|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="true" key="wrap"/>
+		<item value="true" key="isRegEx"/>
 		<item value="false" key="casesensitive"/>
-		<item value="false" key="isRegEx"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="tallies" key="selection"/>
+		<item value="" key="selection"/>
 		<list key="findhistory">
-			<item value="tallies"/>
-			<item value="private"/>
-			<item value="reset"/>
-			<item value="genServ"/>
-			<item value="inverseF"/>
-			<item value="inverse"/>
-			<item value="fixed"/>
-			<item value="streamArr"/>
+			<item value="double"/>
+			<item value="\nprintln"/>
+			<item value=" println"/>
+			<item value="println"/>
+			<item value="\+"/>
+			<item value="allTa"/>
+			<item value="opt"/>
+			<item value="VarProp"/>
 		</list>
 		<list key="replacehistory">
+			<item value=""/>
+			<item value="\nSystem.out.println"/>
+			<item value=" System.out.println"/>
+			<item value="System.out.println"/>
+			<item value="meanXpilot"/>
+			<item value="getDoubleArrayList()"/>
+			<item value="statGoodQoS"/>
 			<item value="protected"/>
-			<item value="Call"/>
-			<item value="nGoodQoS"/>
-			<item value="reportAndCIStudent"/>
-			<item value="CallCenterCRNac"/>
-			<item value="TallyStore"/>
-			<item value="CallCenterMod"/>
 		</list>
 	</section>
 </section>
