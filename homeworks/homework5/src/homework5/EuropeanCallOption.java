@@ -14,6 +14,9 @@ public class EuropeanCallOption {
 	protected double[] muDelta; // Differences * (r - sigma^2/2).
 	protected double[] sigmaSqrtDelta; // Square roots of differences * sigma.
 	protected double[] logS; // Log of the GBM process: logS[t] = log (S[t]).
+	protected double s_0;
+	protected double r;
+	protected double K;
 	
 	
 	public EuropeanCallOption(double r,     // short rate
@@ -29,6 +32,9 @@ public class EuropeanCallOption {
 		this.sigma = sigma;
 		this.T = T;
 		this.s = s;
+		this.s_0 = s_0;
+		this.r = r;
+		this.K = K;
 		this.discount = Math.exp(-r * T);
 		double mu = r - 0.5 * sigma * sigma;
 		muDelta = new double[s];
@@ -126,6 +132,18 @@ public class EuropeanCallOption {
 	}
 	
 	
+	public double getExpectedValue() {
+
+		double d_1 = (Math.log(s_0 / K) + (r + ((sigma*sigma)/2.))*T) / (sigma * Math.sqrt(T));
+		double d_2 = d_1 - (sigma * Math.sqrt(T));
+		double left = s_0 * NormalDist.cdf01(d_1);
+		double right = K * Math.exp(-r*T) * NormalDist.cdf01(d_2);
+		
+		return left - right;
+	}
+	
+	
+	
 	public void simulateRunsBarrier(int n, double barrier, RandomStream stream, Tally stat) {
 		stat.init();
 		for (int i = 0; i < n; i++) {
@@ -180,6 +198,7 @@ public class EuropeanCallOption {
 		int s= 10;
 		double barrier = 0;
 
+		
 		
 		EuropeanCallOption process = new EuropeanCallOption(r, sigma, K, s_0, T, s);
 		Tally statValue = new Tally("Stats on value of Asian option");
