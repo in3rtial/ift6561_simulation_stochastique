@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="java.lang.System"/>
 <fullyQualifiedTypeName name="umontreal.iro.lecuyer.stat.TallyStore"/>
 <fullyQualifiedTypeName name="umontreal.iro.lecuyer.probdist.GammaDist"/>
-<fullyQualifiedTypeName name="umontreal.iro.lecuyer.rng.MRG32k3a"/>
 <fullyQualifiedTypeName name="umontreal.iro.lecuyer.probdist.ErlangDist"/>
 <fullyQualifiedTypeName name="umontreal.iro.lecuyer.rng.RandomStream"/>
 <fullyQualifiedTypeName name="homework5.European"/>
+<fullyQualifiedTypeName name="umontreal.iro.lecuyer.rng.MRG32k3a"/>
+<fullyQualifiedTypeName name="umontreal.iro.lecuyer.stat.Tally"/>
+<fullyQualifiedTypeName name="java.lang.Double"/>
+<fullyQualifiedTypeName name="java.lang.System"/>
 </qualifiedTypeNameHistroy>

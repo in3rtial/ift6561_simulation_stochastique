@@ -1,0 +1,70 @@
+package homework5;
+
+import umontreal.iro.lecuyer.rng.MRG32k3a;
+import umontreal.iro.lecuyer.stat.Tally;
+
+public class ex5 {
+
+	public ex5() {
+		
+		
+	}
+	
+	public static void main(String[] args)
+	{
+		// so this is the values we want to try with
+		double[] barriers = new double[]{0, 75, 80, 90, 95};
+		
+		// European Call option parameters
+		double r = 0.08;     // short rate
+		double sigma = 0.2;  // volatility
+		double K = 90.;     // strike price
+		double s_0 = 100.;   // initial price
+		double T = 1;        // total time difference
+		int s=10;            // number of evenly spaced observations
+		int runSize = 10000;
+		
+		EuropeanCallOption option = new EuropeanCallOption(r, sigma, K, s_0, T, s);
+
+		// compute the Black-Scholes expectation
+		double val = option.getExpectedValue(s_0, K, r, sigma, T);
+		System.out.println("Value expected without barrier "+ val);
+
+		
+		// setup the machinery (prng, tallies)
+		MRG32k3a prng = new MRG32k3a();
+		prng.resetNextSubstream();
+		Tally baselineStats = new Tally("Value without barrier (validation)");
+		
+		// compute the reference value (no barrier)
+		// this ascertains that the model is working good
+		option.simulateRunsDownAndInCMC(runSize, Double.POSITIVE_INFINITY, prng, baselineStats);
+		System.out.println("\n"+baselineStats.report());
+		prng.resetStartStream();
+		option.simulateRunsDownAndIn(runSize, Double.POSITIVE_INFINITY, prng, baselineStats);
+		System.out.println("\n"+baselineStats.report());
+		
+		System.out.println("=====================================================")
+
+		// compute with the barriers
+		for(int i = 0; i < barriers.length; i++)
+		{
+			prng.resetStartSubstream();
+			Tally barrierStatsCMC = new Tally("barrier = "+barriers[i] +" with CMC");
+			Tally barrierStats = new Tally("barrier = " + barriers[i]);
+			
+			option.simulateRunsDownAndIn(runSize, barriers[i], prng, barrierStats);
+			System.out.println(barrierStats.report());
+			prng.resetStartSubstream();
+			
+			
+			option.simulateRunsDownAndInCMC(runSize, barriers[i], prng, barrierStatsCMC);
+			System.out.println(barrierStatsCMC.report()+"\n\n");
+
+	
+			
+		}
+	
+	}
+
+}

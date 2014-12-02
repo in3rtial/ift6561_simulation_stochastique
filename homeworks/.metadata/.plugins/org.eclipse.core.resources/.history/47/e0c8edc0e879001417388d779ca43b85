@@ -1,0 +1,26 @@
+package homework5;
+
+public class ex5 {
+
+	public ex5() {
+		
+		
+	}
+	
+	public static void main(String[] args)
+	{
+		// so this is the values we want to try
+		double r = 0.08;     // short rate
+		double sigma = 0.2;  // volatility
+		double K = 100.;     // strike price
+		double s_0 = 100.;   // initial price
+		double T = 1;        // total time difference
+		int s=10;            // number of evenly spaced observations
+		EuropeanCallOption option = new EuropeanCallOption(r, sigma, K, s_0, T, s);
+		
+		double val = option.getExpectedValue(s_0, K, r, sigma, T);
+		
+		System.out.println(val);
+	}
+
+}

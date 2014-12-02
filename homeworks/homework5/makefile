@@ -10,5 +10,14 @@ ex2: ex2.md
 ex4: ex4.md
 	pandoc -s --mathjax ex4.md -o ex4.pdf
 
-ex3: ex5.md
+ex5: ex5.md
 	pandoc -s --mathjax ex5.md -o ex5.pdf
+
+rmAll:
+	rm ex1.pdf\
+	rm ex2.pdf\
+	rm ex4.pdf\
+	rm ex5.pdf
+
+homework: all rmAll
+	gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=IFT6561_Homework5_GabrielCParent.pdf ex1.pdf ex2.pdf ex4.pdf ex5.pdf

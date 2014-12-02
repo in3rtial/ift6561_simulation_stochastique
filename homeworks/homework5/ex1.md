@@ -1,7 +1,7 @@
 
 ## Exercise 1 (6.1)
 
-### Empirical Data
+### Data
 
 ~~~
     CRNs with the (a + c) synchronization

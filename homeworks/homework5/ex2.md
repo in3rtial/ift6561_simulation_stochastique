@@ -1,7 +1,7 @@
 
 ## Exercise 2 (6.2)
 
-### Empirical Data
+### Data
 
 ~~~
     Variance reduction for delta = 10.0

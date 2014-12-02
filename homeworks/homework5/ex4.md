@@ -137,6 +137,9 @@ Well, the other ones are pretty complicated to understand (or even understand), 
 
 - Moment matching methods (quadratic resampling)
 - Stratified and Latin hypercube sampling (this one is pretty nice)
+- Importance sampling
+- Conditional Monte Carlo
+- Low-discrepency sequences
 
 These are all the ones suggested in the article from Boyle. There are probably many other ways to do it.
 

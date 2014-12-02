@@ -30,3 +30,9 @@
 1417494076339	Rename local variable 'varD'
 1417494137974	Rename local variable 'covarAD'
 1417496824557	Delete element
+1417499283316	Rename method 'simulateRunsBarrier'
+1417499336951	Rename method 'getPayoffBarrier'
+1417499639517	Rename local variable 'j'
+1417505832359	Delete element
+1417505840789	Delete element
+1417505849779	Delete element

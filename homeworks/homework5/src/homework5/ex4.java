@@ -7,16 +7,6 @@ import umontreal.iro.lecuyer.stat.TallyStore;
 public class ex4 {
 
 
-
-
-	
-	public static void arrayCopy(double[] source, double[] destination)
-	{
-		assert(source.length==destination.length);
-		for(int i = 0; i < source.length; i++)
-			destination[i] = source[i];
-	}
-	
 	private static void simulateCV(int numRuns, int numPilotRuns, double barrier) {
 		
 		
@@ -51,14 +41,11 @@ public class ex4 {
 		pilotBarrier.init();
 		prng.resetStartSubstream();
 		
-		option.simulateRunsBarrier(numPilotRuns, barrier, prng, pilotBarrier);
+		option.simulateRunsDownAndOut(numPilotRuns, barrier, prng, pilotBarrier);
 
 		
 		// fit betaVC
 		// betaVC = COV[X, Y] / Var[X]
-		double meanY_pilot = pilotStd.average();
-		double varY_pilot = pilotStd.variance();
-		double meanX_pilot = pilotBarrier.average();
 		double varX_pilot = pilotBarrier.variance();
 		double covXY_pilot = pilotStd.covariance(pilotBarrier);
 		betaVC = covXY_pilot / varX_pilot;
@@ -66,14 +53,12 @@ public class ex4 {
 		
 		
 		// Perform the real runs
-		
+
 		TallyStore realStd = new TallyStore();
 		pilotStd.init();
-		//double[] CV = new double[numPilotRuns];
 		prng.resetStartSubstream();
 		
 		option.simulateRunsStd(numRuns, prng, realStd);
-		//arrayCopy(statsVanilla.getArray(), CV);
 		
 		// generate the runs with the barrier
 		TallyStore realBarrier = new TallyStore();
@@ -81,7 +66,7 @@ public class ex4 {
 		//double[] barrierResult = new double[numPilotRuns];
 		prng.resetStartSubstream();
 		
-		option.simulateRunsBarrier(numRuns, barrier, prng, realBarrier);
+		option.simulateRunsDownAndOut(numRuns, barrier, prng, realBarrier);
 		//arrayCopy(barrierResult, statsBarrier.getArray());
 		
 		
@@ -110,32 +95,9 @@ public class ex4 {
 		System.out.println("\n==== CV RESULTS ("+barrier+") ====================");
 		System.out.println("meanX = " + (meanX - betaVC*(meanX - option.getExpectedValue())));
 		System.out.println("Var(D) = " + varDiff + "\nratio = " + (varDiff / varCrude));
-		System.out.println("\n\n");
-		
+		System.out.println("\n\n");		
+		}
 
-		
-}
-
-	public static void reproduceResults()
-	{
-		// reproduce results Boyle, Broadie, and Glasserman, 1997
-		double r = 0.1;
-		double sigma = 0.2;
-		double s_0 = 100;
-		double K = 100;
-		double T = 0.2;
-		int s = 5;
-		int n = 10000;
-		double barrier = 0;
-		EuropeanCallOption option = new EuropeanCallOption(r, sigma, K, s_0, T, s);
-		Tally stats = new Tally();
-		MRG32k3a prng = new MRG32k3a();
-		option.simulateRunsBarrier(n, barrier, prng, stats);
-		System.out.println(stats.report());
-		System.out.println(option.getExpectedValue(s_0, K, r, sigma, T));
-		
-		
-	}
 	
 	public static void main(String[] args) {
 		/*
@@ -149,11 +111,6 @@ public class ex4 {
 		 * the variance for this example?
 		 */
 
-		/* the control variate suggested in example 6.18 is:
-		 * to use the standard European option (i.e. with barrier = -Inf)
-		 */
-		
-		//reproduceResults();
 		int numRuns = 10000;
 		int numPilotRuns = 1000;
 		double[] barriers = new double[]{0, 75, 80, 90, 95};

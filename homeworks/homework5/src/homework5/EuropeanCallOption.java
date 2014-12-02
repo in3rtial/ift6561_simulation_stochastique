@@ -17,6 +17,7 @@ public class EuropeanCallOption {
 	protected double s_0;
 	protected double r;
 	protected double K;
+	protected double[] observationTimes;
 	
 	
 	public EuropeanCallOption(double r,     // short rate
@@ -47,7 +48,7 @@ public class EuropeanCallOption {
 		{
 			observationTimes[j] = ((double) j / (double)s)* T;
 		}
-		
+		this.observationTimes = observationTimes;
 		double delta = T / (double)s;
 		for (int j = 0; j < s; j++) {
 			muDelta[j] = mu * delta;
@@ -93,7 +94,7 @@ public class EuropeanCallOption {
 	 * 
 	 * @return payoff of the option
 	 */
-	public double getPayoffBarrier(double barrier) {
+	public double getPayoffDownAndOut(double barrier) {
 		double value = 0.; // to get the pesky warning off
 		for (int j = 1; j < logS.length; j++)
 		{
@@ -107,6 +108,46 @@ public class EuropeanCallOption {
 			return discount * (value - strikePrice);
 		else
 			return 0.0;
+	}
+	
+	/**
+	 * The opposite of down an out
+	 * @param barrier
+	 * @return
+	 */
+	public double getPayoffDownAndIn(double barrier) {
+		double value = 0.; // to get the pesky warning off
+		boolean good = false;
+		for (int time = 1; time < logS.length; time++)
+		{
+			value = Math.exp(logS[time]);
+	
+			if(value < barrier)
+			{
+				good = true;
+			}
+		}
+		
+		if(!good)
+			return 0.0;
+
+		return Math.max(0, discount * (value - strikePrice));
+
+	}
+	
+	public double getPayoffDownAndInCMC(double barrier) {
+		double value = 0.; // to get the pesky warning off
+		for (int time = 0; time < logS.length; time++)
+		{
+			value = Math.exp(logS[time]);
+			if(value < barrier)
+			{
+				double t =  T - observationTimes[time];
+				return getExpectedValue(value, K, r, sigma, t);
+			}
+		}
+
+		return 0.0;
 	}
 	
 	
@@ -144,11 +185,30 @@ public class EuropeanCallOption {
 	
 	
 	
-	public void simulateRunsBarrier(int n, double barrier, RandomStream stream, Tally stat) {
+	public void simulateRunsDownAndOut(int n, double barrier, RandomStream stream, Tally stat) {
 		stat.init();
 		for (int i = 0; i < n; i++) {
 			generatePath(stream);
-			stat.add(getPayoffBarrier(barrier));
+			stat.add(getPayoffDownAndOut(barrier));
+		}
+	}
+	
+	
+	public void simulateRunsDownAndIn(int n, double barrier, RandomStream stream, Tally stat)
+	{
+		stat.init();
+		for (int i = 0; i < n; i++) {
+			generatePath(stream);
+			stat.add(getPayoffDownAndIn(barrier));
+		}
+	}
+	
+	public void simulateRunsDownAndInCMC(int n, double barrier, RandomStream stream, Tally stat)
+	{
+		stat.init();
+		for (int i = 0; i < n; i++) {
+			generatePath(stream);
+			stat.add(getPayoffDownAndInCMC(barrier));
 		}
 	}
 

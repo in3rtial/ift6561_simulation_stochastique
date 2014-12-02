@@ -2,29 +2,30 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
 		<item value="349" key="DIALOG_WIDTH"/>
-		<item value="276" key="DIALOG_Y_ORIGIN"/>
+		<item value="94" key="DIALOG_Y_ORIGIN"/>
+		<item value="841" key="DIALOG_X_ORIGIN"/>
 		<item value="520" key="DIALOG_HEIGHT"/>
-		<item value="157" key="DIALOG_X_ORIGIN"/>
 		<item value="1|Ubuntu|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="true" key="wrap"/>
-		<item value="true" key="isRegEx"/>
 		<item value="false" key="casesensitive"/>
+		<item value="false" key="isRegEx"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="" key="selection"/>
+		<item value="betaVC" key="selection"/>
 		<list key="findhistory">
+			<item value="betaVC"/>
+			<item value="beta"/>
+			<item value="println("/>
+			<item value=" println("/>
+			<item value="f("/>
 			<item value="double"/>
 			<item value="\nprintln"/>
 			<item value=" println"/>
-			<item value="println"/>
-			<item value="\+"/>
-			<item value="allTa"/>
-			<item value="opt"/>
-			<item value="VarProp"/>
 		</list>
 		<list key="replacehistory">
+			<item value="System.out.println("/>
 			<item value=""/>
 			<item value="\nSystem.out.println"/>
 			<item value=" System.out.println"/>
@@ -32,7 +33,6 @@
 			<item value="meanXpilot"/>
 			<item value="getDoubleArrayList()"/>
 			<item value="statGoodQoS"/>
-			<item value="protected"/>
 		</list>
 	</section>
 </section>

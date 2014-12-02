@@ -104,6 +104,10 @@ public class ex2 {
 			c.statAbandon.init();
 		}
 		
+		/*
+		 * After this point, most of the code is taken from CallCenterEI
+		 * (in if6561/java/examples2009 directory I think)
+		 */
 		// stats to fill
 		int k = cc1.b.length;
 		double[] a = new double[k];
@@ -134,9 +138,7 @@ public class ex2 {
 		double varProportionalC = 0.0; // Strat with propor. sampling + CV.
 
 		
-		
 
-		
 		// PILOT RUNS
 		for (int t=0; t<k; t++) {
 	         // Pilot runs with B = b[t].
@@ -196,21 +198,7 @@ public class ex2 {
 	         if (sigmaCI[t] < sigmaBest[t]) sigmaBest[t] = sigmaCI[t];
 
 	         sigmaBestT += sigmaBest[t];
-	         /*
-	         println ("\n\n**  Pilot runs for t = " + t);
-	         println (" b[t] = E[B|t] = " + f(b[t]) + ",  prob[t] = " + f(q[t]));
-	         println (" meanAp[t] = " + f(meanAp[t]) + ",  Var(A[t]) = " + f(varAp[t]));
-	         println (" meanXpilot[t] = " + f(meanXpilot[t]) + ",  Var(X[t]) = " + f(varXp[t]));
-	         println (" meanDp[t] = " + f(meanDp[t]) + ",  Var(D[t]) = " + f(varDp[t]));
-	         println (" Covar(A[t],X[t]) = " + f(covarAXp[t]));
-	         println (" Covar(A[t],D[t]) = " + f(covarADp[t]));
-	         println ("  betap[t] = " + f(betap[t]) + ",   betaIp[t] = " + f(betaIp[t]));
-	         println ("  varCp[t] = " + f(varCp[t]) + ",   VarCIp[t] = " + f(varCIp[t]));
-	         println ("  sigma = " + f(sigma[t]) + ",  sigmaI = " + f(sigmaI[t]) +
-	                  ", sigmaC = " + f(sigmaC[t]) + ",  sigmaCI = " + f(sigmaCI[t]));
-	         println ("  sigmaBest = " + f(sigmaBest[t]));
-	         println ();
-	         */
+
 	      }
 
 
@@ -266,12 +254,6 @@ public class ex2 {
 	            - betap[t] * (cc1.statArrivals.average() - b[t] * cc1.nCallsExpected));
 	         varProportionalC += varCp[t] * q[t] * q[t] * numRuns / (double)numProp[t];
 
-	         /*
-	         println ("\n\n**   Final runs for t = " + t + ";  n[t] = " + numProp[t]);
-	         println ("  betap[t] = " + f(betap[t]));
-	         println ("  varCp[t] = " + f(varCp[t]));
-	         println ();
-	         */
 	      }
 	      println ("Mean with propor. allocation            = " + f(meanProportional));
 	      println ("Variance with propor. allocation        = " + f(varProportional));
@@ -280,40 +262,7 @@ public class ex2 {
 	   }
 	
 	
-	public ex2() {
-		/*
-		 * For the example of Section 6.2.2, implement a combination of the CRN
-		 * methodology with the CV A_i and with stratification based on B_i ,
-		 * with proportional allocation.
-		 */
-		
-		/* PART 1: methodology with the CV A_i 
-		 * 
-		 * Total number of calls arriving on day i can be written as A_i
-		 * 		A_i = X_i + D_i
-		 * 		X_i is the number of calls under the time limit s
-		 * 		D_i is the number of calls over  the time limit s (waited more than s or abandoned)
-		 * 
-		 * a = E[A_i] = 1660
-		 * mu = E[X_i] = E[A_i - D_i] = a - E[D_i]
-		 * 
-		 * mu can be estimated as well by the indirect estimator
-		 * 
-		 * X^{-}_{i, n} = E[A_i] - D^{-}_n = a - 1/n sum(D_i)	
-		 */
-		
-		
-		
-		
-		
-		
-		/* PART 2: stratification based on B_i , with proportional allocation
-		 * 
-		 * 
-		 * 
-		 */
-
-	}
+	public ex2() {	}
 		
 		
 	
