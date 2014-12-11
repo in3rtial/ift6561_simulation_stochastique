@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename local variable &apos;k&apos; in &apos;ExamFinal.AsianVG.testVGProcess()&apos; to &apos;K&apos;&#x0A;- Original project: &apos;ExamFinal&apos;&#x0A;- Original element: &apos;ExamFinal.AsianVG.testVGProcess().k&apos;&#x0A;- Renamed element: &apos;k&apos;&#x0A;- Update references to refactored element" description="Rename local variable &apos;k&apos;" id="org.eclipse.jdt.ui.rename.local.variable" input="/src&lt;ExamFinal{AsianVG.java[AsianVG~testVGProcess@k!4006!4020!4013!4013!D!0!false" name="K" references="true" stamp="1418113129426" version="1.0"/>
+</session>
