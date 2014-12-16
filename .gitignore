@@ -13,3 +13,9 @@ hs_err_pid*
 # latex stuff
 *.log
 *.aux
+
+# archive files
+*.gz
+
+# settings
+exam_final/.metadat*

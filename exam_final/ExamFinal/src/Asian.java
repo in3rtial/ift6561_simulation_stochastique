@@ -38,16 +38,18 @@ public class Asian {
    }
 
    // Computes and returns the discounted option payoff.
-   public double getPayoff () {
-       double average = 0.0;  // Average of the GBM process.
-       for (int j = 1; j <= s; j++)
-    	   {average += Math.exp (logS[j]);
-    	   System.out.println(logS[j]);
-    	   }
-       average /= s;
-       if (average > strike) return discount * (average - strike);
-       else return 0.0; 
-   }
+	public double getPayoff() {
+		double average = 0.0; // Average of the GBM process.
+		for (int j = 1; j <= s; j++) {
+			average += Math.exp(logS[j]);
+			System.out.println(logS[j]);
+		}
+		average /= s;
+		if (average > strike)
+			return discount * (average - strike);
+		else
+			return 0.0;
+	}
 
    // Performs n indep. runs using stream and collects statistics in statValue.
    public void simulateRuns (int n, RandomStream stream, Tally statValue) {

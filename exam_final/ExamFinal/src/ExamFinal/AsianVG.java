@@ -16,38 +16,48 @@ public class AsianVG {
    final double discount;  // Discount factor exp(-r * zeta[t]).
    final double[] zeta;
    final double s0;
-   final double drift;
-   final double volatility;
+   final double sigma;
+   final double theta;
    final double nu;
    final double mu;
-   final double w;
+   final double omega;
    final double r;
 
-   // Array zeta[0..s] must contain zeta[0]=0.0, plus the s observation times.
-   public AsianVG (double r, // short rate
-		   		   double drift, // drift of the BM (theta or mu)
-		   		   double volatility, // volatility of BM (sigma)
-		   		   double nu, // variance of the VG (nu)
-		   		   double K,  // K price
-		   		   double s0, // initial price
-		   		   int s, // number of observations
-		   		   double[] zeta // observation times
-		   		   )
+   
+   // Array zeta[0..s] must contain zeta[0]=0.0, plus the s observation times. 
+   /**
+    * 
+    * @param r short rate
+    * @param sigma volatility of BM
+    * @param theta variance rate of gamma time change
+    * @param nu drift of BM
+    * @param K strike price
+    * @param s0 initial price
+    * @param s number of observations
+    * @param zeta observation times
+    */
+   public AsianVG (double r,
+		   		   double sigma,
+		   		   double theta,
+		   		   double nu,
+		   		   double K,
+		   		   double s0,
+		   		   int s,
+		   		   double[] zeta)
    {
       this.K = K;
       this.s0 = s0;
       this.s = s;
       this.zeta = zeta;
+      assert(zeta[0] == 0.0);
       this.discount = Math.exp (-r * zeta[s]);
-      this.volatility = volatility;
+      this.sigma = sigma;
       this.mu = 1;
-      this.drift = drift;
+      this.theta = theta;
       this.nu = nu;
       this.r = r;
-      this.w = Math.log(1 - 
-    		   (drift*nu) -
-    		   (volatility*volatility*nu/2.0))/nu;
-      System.out.println("w ="+this.w);
+      this.omega = Math.log(1. - (theta*nu) - ((sigma*sigma*nu)/2.0))/nu;      
+      
    }
 
   	/**
@@ -57,12 +67,12 @@ public class AsianVG {
 	 */
 	public double getPayoff(double[] path) {
 		double average = 0.0; // Average of the process
+		double logs0 = Math.log(s0);
 		for(int i = 1; i <= this.s; i++)
 		{
-			double St = path[i];
-			average += Math.exp(St);
+			double St = Math.exp(logs0+path[i]);
+			average += St;
 		}
-
 		average /= s;
 		//System.out.println(average);
 		if (average > this.K)
@@ -72,24 +82,33 @@ public class AsianVG {
 	}
 
 
-	
-   public void BGSS(int n, MRG32k3a prng, Tally stats)
- {
-		// generate sequentially (BGSS)
-
-		VarianceGammaProcess process = new VarianceGammaProcess(s0, drift,
-				volatility, nu, prng);
+	/**
+	 * Generate path and payoff using Brownian Gamma Sequential Sampling
+	 * @param n number of samples to generate
+	 * @param prng pseudo-random number generator (MRG32k3a ideally)
+	 * @param stats tally to keep the results
+	 */
+	public void BGSS(int n, MRG32k3a prng, TallyStore stats) {
+		// Sequential (BGSS), the simplest one
+		// uses a variance gamma subordinator to the
+		
+		//double log_s0 = Math.log(s0);
+		VarianceGammaProcess process = new VarianceGammaProcess(0., //s0
+																theta, sigma, nu, // gamma process parameters
+																prng); // pseudorandom number generator
 		process.setObservationTimes(this.zeta, this.s);
-
+		
 		for (int i = 0; i < n; i++) {
-
-			process.resetStartProcess();
-			process.generatePath();
-			for (int j = 0; j < process.getPath().length; j++)
-				// System.out.println(process.getPath()[i]);
-
-				stats.add(getPayoff(process.getPath()));
-
+			// generate the path (s VG and s N(0, 1) generated)
+			double[] vg_path = process.generatePath();	
+			double[] path = new double[vg_path.length];
+			
+			for (int j = 0; j < path.length; j++)
+			{
+				double t = zeta[j];
+				path[j] = vg_path[j] + r*t + omega*t;
+			}
+			stats.add(getPayoff(path));
 		}
 	}
 
@@ -120,14 +139,19 @@ public class AsianVG {
 		TallyStore stats = new TallyStore("stat");
 		stats.setConfidenceIntervalStudent();
 
+		/*
+		 * Variance Gamma parameters
+		 * - sigma = volatility BM
+		 * - nu = variance rate of gamma time change
+		 * - theta = drift BM
+		 */
 		double r = 0.1; // short rate of 10%
-		double theta = 0; // drift of BM (mu)
-		double sigma = 0.12136; // volatility of BM (sigma)
-		double nu = 0.5; // variance of the VG
-		double mu = 1.;
+		double theta = -0.1436; // drift BM
+		double sigma = 0.12136; // volatility of BM
+		double nu = 0.3; // variance rate of gamma time change
 		double K = 101; // K
 		double s0 = 100; // s0
-		int T = 1000;
+		int T = 1;
 		MRG32k3a prng = new MRG32k3a();
 
 		// E[X(t)] = theta*t
@@ -136,21 +160,16 @@ public class AsianVG {
 		zeta[0] = 0.0;
 		for (int j = 1; j <= s; j++)
 			zeta[j] = ((double) j / (double) s) * (double) T;
-
-		for(double z: zeta)
-			System.out.println(z);
 		
-		GammaProcess gamma = new GammaProcess(0., mu, nu, prng);
-		gamma.setObservationTimes(zeta, zeta.length-1);
+		printA(zeta);
 		
-		for(int i=0; i<100; i++)
-			prng.resetNextSubstream();
-			
-		for(int i=0; i<10; i++)
-		{
-			double[] a = gamma.generatePath();
-			printA(a);
-		}
+		AsianVG process = new AsianVG(r, sigma, theta, nu, K, s0, s, zeta);
+		
+		process.BGSS(100000, prng, stats);
+		
+		System.out.println(stats.report());
+		
+	}
 		/*
 		VarianceGammaProcess VGProcess = new VarianceGammaProcess(Math.log(s0), theta,
 				sigma, nu, prng);
@@ -167,7 +186,6 @@ public class AsianVG {
 		System.out.println(stats.report());
 		*/
 
-	}
 	
 	public static void printA(double[] arr)
 	{
@@ -178,30 +196,9 @@ public class AsianVG {
 	}
 
 
-	public static void testGamma()
-	{
-		// imitate gamma process
-		
-		double delta = 1./16.;
-		double s_0 = 0.;
-		double nu=0.3;
-		double mu=1.;
-		double first = (delta * mu * mu )/ nu;
-		GammaDist a = new GammaDist(first, mu/nu);
-		MRG32k3a prng = new MRG32k3a();
-		
-		for(int i = 0; i < 100; i++)
-		{
-			System.out.println(a.inverseF(prng.nextDouble()));
-		}
-		
-	}
-
-
-
 	public static void main(String[] args) {
-		testGamma();
-		//testVGProcess();
+		//testGamma();
+		testVGProcess();
 		/*
 
 		// initialize the observation times
