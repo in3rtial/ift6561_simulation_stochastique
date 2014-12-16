@@ -1,3 +1,4 @@
+package ExamFinal;
 import umontreal.iro.lecuyer.rng.*;
 import umontreal.iro.lecuyer.probdist.NormalDist;
 import umontreal.iro.lecuyer.stat.Tally;
@@ -42,7 +43,7 @@ public class Asian {
 		double average = 0.0; // Average of the GBM process.
 		for (int j = 1; j <= s; j++) {
 			average += Math.exp(logS[j]);
-			System.out.println(logS[j]);
+			//System.out.println(logS[j]);
 		}
 		average /= s;
 		if (average > strike)

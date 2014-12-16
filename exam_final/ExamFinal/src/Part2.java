@@ -1,3 +1,9 @@
+import ExamFinal.AsianVG_RQMC;
+import umontreal.iro.lecuyer.hups.*;
+import umontreal.iro.lecuyer.rng.MRG32k3a;
+import umontreal.iro.lecuyer.stat.Tally;
+
+
 public class Part2 {
 
 	/*
@@ -19,9 +25,54 @@ public class Part2 {
 	 * (a) Ecrivez un programme permettant de reproduire a peu pres les r
 	 * esultats du tableau 6.12 des notes et refaites les experiences pour la
 	 * colonne n = 2^14 , avec m = 32 repetitions, pour les quatre methodes RQMC
-	 * indiques dans le tableau. Bien sˆ ur, vous n’obtiendrez pas exactement
+	 * indiques dans le ta
+	 * bleau. Bien sur, vous n’obtiendrez pas exactement
 	 * les memes facteurs, car ces valeurs sont des estimations bruitees.
 	 */
+	
+	public void a()
+	{
+		// Sobol’ nets with a random digital shift only (Sob-S)
+		// Sobol’ nets with a left matrix scramble followed by a digital shift (Sob-LMS-S)
+		// Korobov lattice rules with a random shift modulo 1 (Kor-S)
+		// Korobov lattice rules with a random shift modulo 1 followed by a baker transformation (Kor-S-B)
+		
+		// variance reduction factor is defined as the Monte Carlo variance (per observation)
+		// divided by n times the variance of Q_n for the randomized QMC method
+		// la colonne n=2^14 est les Sobol nets
+		double r = 0.1; // short rate of 10%
+		double theta = -0.1436; // drift BM
+		double sigma = 0.12136; // volatility of BM
+		double nu = 0.3; // variance rate of gamma time change
+		double K = 101; // K
+		double s0 = 100; // s0
+		int T = 1;
+		MRG32k3a prng = new MRG32k3a();
+
+		// E[X(t)] = theta*t
+		int s = 16;
+		double[] zeta = new double[s + 1];
+		zeta[0] = 0.0;
+		for (int j = 1; j <= s; j++)
+			zeta[j] = ((double) j / (double) s) * (double) T;
+		
+		AsianVG_RQMC process = new AsianVG_RQMC(r, sigma, theta, nu, K, s0, s, zeta);
+		double exactMean = 5.725;
+		double exactVar = 28.89;
+		
+		DigitalNet sob = new SobolSequence(14, 31, s*2);
+		//PointSet k
+		Tally stats1 = new Tally();
+		Tally stats2 = new Tally();
+		Tally stats3 = new Tally();
+		int numPoints = 2;
+		process.BGSS_RQMC(numPoints, sob, prng, stats1);
+		process.BGBS_RQMC(numPoints, sob, prng, stats2);
+		process.DGBS_RQMC(numPoints, sob, prng, stats3);
+		System.out.println(stats1.report() + stats1.average() + " " + stats1.variance());
+		System.out.println(stats2.report() + stats2.average() + " " + stats2.variance());
+		System.out.println(stats3.report() + stats3.average() + " " + stats3.variance());
+	}
 
 	/*
 	 * (b) Supposons maintenant que d = 1, de sorte que S ̄ = S(t 1 ) = S(1).
@@ -76,7 +127,7 @@ public class Part2 {
 
 	/*
 	 * (f) Combinez votre estimateur IS obtenu en (e) avec une methode RQMC qui
-	 * utilise un “Sobol’ net” constitue des n = 2 14 premiers points de la
+	 * utilise un “Sobol’ net” constitue des n = 2^14 premiers points de la
 	 * suite de Sobol’, randomise par un “left matrix scramble” suivi d’un
 	 * decalage aleatoire digital (LMScrambleShift dans SSJ). Estimez la valeur
 	 * de l’option avec ce nouvel estimateur pour les valeurs de K donnees en

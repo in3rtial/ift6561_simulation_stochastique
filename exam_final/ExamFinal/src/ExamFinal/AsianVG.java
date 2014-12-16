@@ -1,19 +1,13 @@
 package ExamFinal;
 
-import umontreal.iro.lecuyer.probdist.GammaDist;
 import umontreal.iro.lecuyer.rng.*;
 import umontreal.iro.lecuyer.stat.*;
-import umontreal.iro.lecuyer.stochprocess.BrownianMotion;
-import umontreal.iro.lecuyer.stochprocess.GammaProcess;
-import umontreal.iro.lecuyer.stochprocess.GammaProcessBridge;
-import umontreal.iro.lecuyer.stochprocess.VarianceGammaProcess;
-import umontreal.iro.lecuyer.stochprocess.BrownianMotionBridge;
-import umontreal.iro.lecuyer.stochprocess.VarianceGammaProcessDiff;
+import umontreal.iro.lecuyer.stochprocess.*;
 
 public class AsianVG {
-   final double K;    // K price.
-   final int s;            // Number of observation times.
-   final double discount;  // Discount factor exp(-r * zeta[t]).
+   final double K;
+   final int s;
+   final double discount;  // discount factor = Math.exp(-r * zeta[s]).
    final double[] zeta;
    final double s0;
    final double sigma;
@@ -22,15 +16,14 @@ public class AsianVG {
    final double mu;
    final double omega;
    final double r;
+   final double logs0;
 
-   
-   // Array zeta[0..s] must contain zeta[0]=0.0, plus the s observation times. 
    /**
     * 
     * @param r short rate
     * @param sigma volatility of BM
-    * @param theta variance rate of gamma time change
-    * @param nu drift of BM
+    * @param theta drift of BM
+    * @param nu variance of Gamma
     * @param K strike price
     * @param s0 initial price
     * @param s number of observations
@@ -47,30 +40,31 @@ public class AsianVG {
    {
       this.K = K;
       this.s0 = s0;
+      this.logs0 = Math.log(s0);
       this.s = s;
       this.zeta = zeta;
       assert(zeta[0] == 0.0);
+      assert(zeta.length == s+1);
       this.discount = Math.exp (-r * zeta[s]);
       this.sigma = sigma;
       this.mu = 1;
       this.theta = theta;
       this.nu = nu;
       this.r = r;
-      this.omega = Math.log(1. - (theta*nu) - ((sigma*sigma*nu)/2.0))/nu;      
-      
+      this.omega = Math.log(1. - (theta*nu) - ((sigma*sigma*nu)/2.0))/nu;
    }
 
-  	/**
-	 * Computes and returns the discounted option payoff.
-	 * 
-	 * @return payoff of the option
-	 */
-	public double getPayoff(double[] path) {
+
+   /**
+    * 
+    */
+	public double getPayoff(double[] vgPath) {
 		double average = 0.0; // Average of the process
-		double logs0 = Math.log(s0);
+		
 		for(int i = 1; i <= this.s; i++)
 		{
-			double St = Math.exp(logs0+path[i]);
+			double t = zeta[i];
+			double St = Math.exp(logs0 + vgPath[i] + r*t + omega*t);
 			average += St;
 		}
 		average /= s;
@@ -83,68 +77,98 @@ public class AsianVG {
 
 
 	/**
-	 * Generate path and payoff using Brownian Gamma Sequential Sampling
+	 * Generate paths using Sequential Sampling
 	 * @param n number of samples to generate
 	 * @param prng pseudo-random number generator (MRG32k3a ideally)
 	 * @param stats tally to keep the results
 	 */
-	public void BGSS(int n, MRG32k3a prng, TallyStore stats) {
-		// Sequential (BGSS), the simplest one
-		// uses a variance gamma subordinator to the
+	public void BGSS(int n, RandomStream prng, Tally stats, boolean jump) {
 		
-		//double log_s0 = Math.log(s0);
-		VarianceGammaProcess process = new VarianceGammaProcess(0., //s0
-																theta, sigma, nu, // gamma process parameters
-																prng); // pseudorandom number generator
+		// initialize the subprocesses (Gamma, BM)
+		GammaProcess gamma = new GammaProcess(0.0, 1.0, nu, prng);
+		BrownianMotion bm = new BrownianMotion(0.0, theta, sigma, prng);
+		// initialize the main process
+		VarianceGammaProcess process = new VarianceGammaProcess(0., bm, gamma);
+		
+		// set the parameters
 		process.setObservationTimes(this.zeta, this.s);
 		
+		// generate the paths and add the costs to the stats collector
 		for (int i = 0; i < n; i++) {
-			// generate the path (s VG and s N(0, 1) generated)
-			double[] vg_path = process.generatePath();	
-			double[] path = new double[vg_path.length];
-			
-			for (int j = 0; j < path.length; j++)
-			{
-				double t = zeta[j];
-				path[j] = vg_path[j] + r*t + omega*t;
-			}
-			stats.add(getPayoff(path));
+			double[] vgPath = process.generatePath();
+			stats.add(getPayoff(vgPath));
+			if(jump==true)
+				prng.resetNextSubstream();
 		}
 	}
 
-	/*
-	 * public void BGBS(int n, Tally stats) { // bridge sampling (BGBS) MRG32k3a
-	 * gen = new MRG32k3a(); GammaProcessBridge gb = new
-	 * GammaProcessBridge(this.s0, this.mu, this.nu, gen); BrownianMotionBridge
-	 * bmb = new BrownianMotionBridge(0.0, this.drift, this.volatility, gen);
-	 * VarianceGammaProcess process = new VarianceGammaProcess(this.s0, bmb,
-	 * gb); process.setObservationTimes(this.zeta, this.s); for(int i = 0; i <
-	 * n; i++) { //process.resetStartProcess(); process.generatePath(); for(int
-	 * j = 0; j < process.getPath().length; j++)
-	 * System.out.println(process.getPath()[i]);
-	 * stats.add(getPayoff(process.getPath())); gen.resetNextSubstream(); } }
-	 * 
-	 * public void BGDS(int n, Tally stats) { MRG32k3a gen = new MRG32k3a();
-	 * VarianceGammaProcessDiff process = new VarianceGammaProcessDiff(s0,
-	 * drift, volatility, nu, gen); process.setObservationTimes(zeta, s);
-	 * 
-	 * for(int i = 0; i < n; i++) { process.resetStartProcess();
-	 * process.generatePath(); stats.add(getPayoff(process.getPath()));
-	 * gen.resetNextSubstream(); } }
+
+	/**
+	 * Generate paths using Bridge Sampling
+	 * @param n
+	 * @param prng1
+	 * @param prng2
+	 * @param stats
+	 * @param jump
 	 */
+	public void BGBS(int n, RandomStream prng, Tally stats, boolean jump) {
+		
+		// initialize the subprocesses
+		GammaProcessBridge gamma = new GammaProcessSymmetricalBridge(0.0, 1.0, nu, prng);
+		BrownianMotionBridge bm = new BrownianMotionBridge(0.0, theta, sigma, prng);
+		// initialize the main process
+		VarianceGammaProcess process = new VarianceGammaProcess(0., bm, gamma);
+		
+		// set the parameters
+		process.setObservationTimes(this.zeta, this.s);
 
-	public static void testVGProcess() {
+		// generate the paths and add the costs to the stats collector
+		for (int i = 0; i < n; i++) {
+			double[] vgPath = process.generatePath();
+			stats.add(getPayoff(vgPath));
+			if(jump==true)
+				prng.resetNextSubstream();	
+		}
+	}
 
-		// initialize the tally
-		TallyStore stats = new TallyStore("stat");
-		stats.setConfidenceIntervalStudent();
+	
+	/**
+	 * difference of gammas bridge sampling (DGBS)
+	 */
+	public void DGBS(int n, RandomStream prng, Tally stats, boolean jump) {
+		double mu_p = (Math.sqrt(theta*theta + ((2*sigma*sigma)/nu)) + theta)/2.;
+		double mu_n = (Math.sqrt(theta*theta + ((2*sigma*sigma)/nu)) - theta)/2.;
+		double nu_p = (mu_p * mu_p * nu);
+		double nu_n = (mu_n * mu_n * nu);
+		
+		GammaProcessBridge gammaP = new GammaProcessSymmetricalBridge(0.0, mu_p, nu_p, prng);
+		GammaProcessBridge gammaN = new GammaProcessSymmetricalBridge(0.0, mu_n, nu_n, prng);
+		VarianceGammaProcessDiff process = new VarianceGammaProcessDiff(0.,
+				theta, sigma, nu, gammaP, gammaN);
 
-		/*
-		 * Variance Gamma parameters
-		 * - sigma = volatility BM
-		 * - nu = variance rate of gamma time change
-		 * - theta = drift BM
-		 */
+		process.setObservationTimes(this.zeta, this.s);
+		
+		for (int i = 0; i < n; i++) {
+			double[] vgPath = process.generatePath();
+			stats.add(getPayoff(vgPath));
+			if(jump==true)
+				prng.resetNextSubstream();
+		}
+	}
+
+
+	
+	public static void testGenerators() {
+
+		// initializtestBGSS
+		Tally stats1 = new TallyStore("stat");
+		Tally stats2 = new TallyStore("stat");
+		Tally stats3 = new TallyStore("stat");
+		stats1.setConfidenceIntervalStudent();
+		stats2.setConfidenceIntervalStudent();
+		stats3.setConfidenceIntervalStudent();
+
+		
 		double r = 0.1; // short rate of 10%
 		double theta = -0.1436; // drift BM
 		double sigma = 0.12136; // volatility of BM
@@ -152,7 +176,7 @@ public class AsianVG {
 		double K = 101; // K
 		double s0 = 100; // s0
 		int T = 1;
-		MRG32k3a prng = new MRG32k3a();
+		MRG32k3a_C prng = new MRG32k3a_C();
 
 		// E[X(t)] = theta*t
 		int s = 16;
@@ -161,30 +185,23 @@ public class AsianVG {
 		for (int j = 1; j <= s; j++)
 			zeta[j] = ((double) j / (double) s) * (double) T;
 		
-		printA(zeta);
-		
 		AsianVG process = new AsianVG(r, sigma, theta, nu, K, s0, s, zeta);
 		
-		process.BGSS(100000, prng, stats);
+		process.BGSS(10000, prng, stats1, true);
+		System.out.println(stats1.report());
+		System.out.println("using "+prng.getCount()+" variables\n");
+		prng.resetCount();
+
+		process.BGBS(10000, prng, stats2, true);
+		System.out.println(stats2.report());
+		System.out.println("using "+prng.getCount()+" variables\n");
+		prng.resetCount();
 		
-		System.out.println(stats.report());
-		
+		process.DGBS(10000, prng, stats3, true);
+		System.out.println(stats3.report());
+		System.out.println("using "+prng.getCount()+" variables\n");
+		prng.resetCount();
 	}
-		/*
-		VarianceGammaProcess VGProcess = new VarianceGammaProcess(Math.log(s0), theta,
-				sigma, nu, prng);
-		VGProcess.setObservationTimes(zeta, zeta.length - 1);
-		for (int i = 0; i < 10; i++) {
-			double a[] = VGProcess.generatePath();
-			double c = a[a.length-1];
-			System.out.println("c = "+ c);
-			stats.add(c);
-			System.out.println(c);
-		}
-		for(double d: stats.getArray())
-			System.out.println(d);
-		System.out.println(stats.report());
-		*/
 
 	
 	public static void printA(double[] arr)
@@ -197,42 +214,8 @@ public class AsianVG {
 
 
 	public static void main(String[] args) {
-		//testGamma();
-		testVGProcess();
-		/*
-
-		// initialize the observation times
-		int s = 16;
-		int T=1;
-		double[] zeta = new double[s + 1];
-		zeta[0] = 0.0;
-		for (int j = 1; j <= s; j++)
-			zeta[j] = (double) j / (double) T;
-
-		// initialize the Asian VG process
-		AsianVG process = new AsianVG(0.1, // short rate of 10%
-				-0.1436, // drift of BM (mu)
-				0.12136, // volatility of BM (sigma)
-				0.3, // variance of the VG
-				101, // K
-				100, // s0
-				s, // s
-				zeta);
-
-		// set the experiment parameters
-		int n = 100000;
-
-
-		// System.out.println(BGBS.report());
-		// System.out.println(BGDS.report());
-
-		/*
-		 * VarianceGammaProcess G2 = new VarianceGammaProcess(100, -0.1436, //
-		 * drift of BM (mu) 0.12136, // volatility of BM (sigma) 0.3, //
-		 * variance of the VG new MRG32k3a()); G2.setObservationTimes(zeta, s);
-		 * for(int i = 0; i < 100; i++) { G2.generatePath();
-		 * System.out.println(process.getPayoff(G2.getPath())); }
-		 */
+		testGenerators();
+		
 		
 
 	}
