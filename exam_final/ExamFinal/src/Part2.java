@@ -74,37 +74,9 @@ public class Part2 {
 		System.out.println(stats3.report() + stats3.average() + " " + stats3.variance());
 	}
 
-	/*
-	 * (b) Supposons maintenant que d = 1, de sorte que S ̄ = S(t 1 ) = S(1).
-	 * Supposons aussi que K 100, de sorte que le “payoff” de l’option sera
-	 * rarement positif. On voudra alors utiliser l’importance sampling (IS). Si
-	 * on simule le processus par DGBS, il semble raisonnable d’augmenter la
-	 * moyenne du processus G + et de diminuer celle du processus G − , de
-	 * maniere a augmenter la valeur de G + (1) − G − (1).
-	 * 
-	 * Pour cela, on peut utiliser la strategie heuristique suivante. On
-	 * applique une torsion expo- nentielle (“exponential twisting”) a la
-	 * densite de chacune des deux v.a. gamma: on multiplie la densite g + (x)
-	 * de G + (1) par e θx et la densite g − (y) de G − (1) par e −θy , pour une
-	 * constante θ ≥ 0 qui reste a choisir, puis on normalise les densites. Pour
-	 * θ ≥ 0 donne, quelles seront les nouvelles densites? Comment peut-on
-	 * generer des variables aleatoires selon ces nouvelles densites? Et quel
-	 * sera le rapport de vraisemblance associe?
-	 */
 
-	/*
-	 * (c) Notons que l’option commence a payer lorsque S(1) ≥ K, i.e., lorsque
-	 * r + ω + G + (1) − G − (1) = ln[S(1)/S(0)] ≥ ln(K/S(0)). Il apparait alors
-	 * raisonnable de choisir θ tel que l’on ait E[G + (1)−G − (1)] =
-	 * ln(K/S(0))−r−ω sous les nouvelles densites. Enecrivant l’esperance en
-	 * fonction de θ, obtenez une fonction monotone de θ dont la racine est
-	 * precisement cette valeur de θ. On pourra alors trouver cette racine en
-	 * utilisant une methode telle que celle de Brent-Dekker, disponible dans
-	 * SSJ et ailleurs. Implantez cette strategie IS, et utilisez-la pour
-	 * estimer la valeur de l’option avec une erreur relative d’au plus 1% pour
-	 * K = 140 et pour K = 180. Comparez la valeur et la variance de votre
-	 * estimateur IS avec celui obtenu sans IS, dans les deux cas.
-	 */
+
+
 
 	/*
 	 * (d) Une seconde approche pourrait consister a trouver θ qui minimise la

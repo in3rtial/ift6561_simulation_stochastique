@@ -176,7 +176,7 @@ public class AsianVG {
 		double K = 101; // K
 		double s0 = 100; // s0
 		int T = 1;
-		MRG32k3a_C prng = new MRG32k3a_C();
+		MRG32k3a prng = new MRG32k3a();
 
 		// E[X(t)] = theta*t
 		int s = 16;
@@ -189,18 +189,12 @@ public class AsianVG {
 		
 		process.BGSS(10000, prng, stats1, true);
 		System.out.println(stats1.report());
-		System.out.println("using "+prng.getCount()+" variables\n");
-		prng.resetCount();
-
+		
 		process.BGBS(10000, prng, stats2, true);
 		System.out.println(stats2.report());
-		System.out.println("using "+prng.getCount()+" variables\n");
-		prng.resetCount();
 		
 		process.DGBS(10000, prng, stats3, true);
 		System.out.println(stats3.report());
-		System.out.println("using "+prng.getCount()+" variables\n");
-		prng.resetCount();
 	}
 
 	
