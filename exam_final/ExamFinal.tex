@@ -1,0 +1,118 @@
+\documentclass[12pt]{report}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{bbm}
+
+\newlength\tindent
+\setlength{\tindent}{\parindent}
+\setlength{\parindent}{0pt}
+\renewcommand{\indent}{\hspace*{\tindent}}
+
+
+\begin{document} 
+    \begin{center}
+        \vspace*{1cm}
+        
+        \textbf{Exam Final}
+        
+        \vspace{1.5cm}
+		IFT6561
+        
+        \vspace{2.5cm}
+        
+        \textbf{Gabriel C-Parent}
+        
+        \vfill
+
+        
+        \vspace{0.8cm}
+
+        DIRO\\
+        UdeM\\
+        \vfill
+    \end{center}
+\vfill
+\newpage
+
+
+
+\section*{Part 1}
+
+
+\subsection*{a}
+\textbf{Experimental Results}
+\vspace{1 cm}
+
+Beta vector with CV
+
+(0.00628, 0.000347, 0.00138, 0.00501, 0.00458, 0.00271, 0.00276, 0.00703)
+
+Average without CV                         :  0.11448
+
+Average with CV                            :  0.11291
+
+Variance without CV                        : 0.025091
+
+Variance with CV                           : 0.010342
+
+Variance reduction factor                  :   2.4261
+
+\textbf{Confidence interval student 95 without CV  :  0.11448 $\pm$ 0.0031046}
+
+\textbf{Confidence interval student 95 with CV     :  0.11291 $\pm$ 0.0019932}
+
+
+\vspace{0.5 cm}
+
+As shown in the data, the confidence interval with control variates (CV) is about 1.5 times tighter than without CV. The average of the estimator without CV is also contained within the 95\% student confidence interval of the estimator with CV. Overall, the strategy using CV is pretty good, decreasing the variance by a factor of ~2.4. This was expected, as stated in example 6.26.
+
+\subsection*{b}
+
+%(b) p.101 is pretty much the answer
+%le corollaire 6.6 des notes.
+The whole concept of stochastic derivatives is explained at p.101 of the book, I'm not rewriting it here, we'll just state the core of the matter.
+
+The first necessary observation is that both $\theta_2$ and $\theta_4$ are parameters for the mean of exponential distributions. Using the same proof as given in example 1.49 of the book, we can explain why our estimator is unbiased.
+
+Suppose we want to estimate $\frac{\delta\mathbbm{E}{[T]}}{\delta \theta_i}$, we can write T as a function of $\theta_i$. 
+
+Say $f$ is the function. $f^{'}(\theta_i, U) = V^{'}_i(\theta_i)$ if the link i is in the longest path and 0 otherwise.
+Since, in this case, both $\theta_i$ are the means of exponential random variables, we have $Y_i = Y_i(\theta_i) = -\theta_i ln(1 - U_i)$ and its derivative is $-ln(1-U_i)$. Using the corollary 6.6 to prove that we can interchange the expectation and derivative operators to obtain that our estimator of $f^{'}(\theta_i)$ is unbiased.
+
+Basically, this is the rest of the example 1.49.
+
+\subsection*{c}
+As stated in example 1.50 of the book, if the function $f_j(\theta_j, U) = \mathbbm{1}{[T > x]}$, the estimator can only take
+two values, 0 and 1. Its derivative is either undefined, when the
+function jumps exactly at $\theta_j$ or is 0. It cannot be an unbiased estimator of the derivative because the original function is discontinuous at some point as a function of $\theta_j$.
+
+\subsection*{d}
+% example 6.21
+First thing, we need to condition on all activities except the ones depending on $\theta_2$ and $\theta_4$.
+
+
+
+% the equation for P[T > x]
+The value of the equation is $\mathbbm{P}[T>x] = 1 - \prod \limits{l \in L} F_l[x - \alpha_l - \beta_l]$
+
+\subsection*{e}
+% p.117 for gradient computation code
+% http://drum.lib.umd.edu/bitstream/1903/12391/1/Manterola_umd_0117N_12857.pdf
+% the term is infinitesimal perturbation analysis (IPA)  + stochastic activity network (SAN) on google for more details
+
+% also SAN_GRADIENT p.15
+
+\subsection*{f}
+
+
+\subsection*{g}
+
+
+\section*{2}
+
+\end{document}
