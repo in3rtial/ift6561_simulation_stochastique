@@ -48,13 +48,7 @@ public class AsianVG1{
 		else
 			return 0.0;
 	}
-	
-	protected double setLarger(double v) {
-		if (v >= 0.0D) {
-			return v * 1.000000000000001D + 2.220446049250313E-16D;
-		}
-		return v * 0.999999999999999D;
-	}
+
 	
 	public void simulate(int n, double theta2, RandomStream prng, Tally stats, boolean jump) {
 		// transform the parameters of the VG for the gamma processes
@@ -108,7 +102,7 @@ public class AsianVG1{
 		double theta = -0.1436; // drift BM
 		double sigma = 0.12136; // volatility of BM
 		double nu = 0.3; // variance rate of gamma time change
-		double K = 150; // K
+		double K = 180; // K
 		double s0 = 100; // s0
 		double T = 1;
 		MRG32k3a prng = new MRG32k3a();

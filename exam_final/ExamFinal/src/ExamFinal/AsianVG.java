@@ -156,7 +156,6 @@ public class AsianVG {
 		}
 	}
 
-
 	
 	public static void testGenerators() {
 

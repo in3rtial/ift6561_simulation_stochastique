@@ -120,9 +120,9 @@ public class AsianVGTronquee {
 		MRG32k3a prng = new MRG32k3a();
 		AsianVGTronquee process = new AsianVGTronquee(r, sigma, theta, nu, K, s0, T);
 
-		int n = 1000000;
+		int n = 10000;
 		Tally stats = new Tally();
-		process.simulate(n, 2., prng, stats, true);
+		process.simulate(n, 3., prng, stats, true);
 		System.out.println(stats.report());
 
 	}

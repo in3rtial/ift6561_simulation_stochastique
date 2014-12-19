@@ -1,0 +1,48 @@
+This is BibTeX, Version 0.99d (TeX Live 2013/Debian)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: ExamFinal.aux
+The style file: plain.bst
+Database file #1: ExamFinal.bib
+Warning--empty publisher in fu_gradient_2006
+You've used 2 entries,
+            2118 wiz_defined-function locations,
+            508 strings with 4259 characters,
+and the built_in function-call counts, 706 in all, are:
+= -- 74
+> -- 14
+< -- 1
++ -- 6
+- -- 4
+* -- 36
+:= -- 111
+add.period$ -- 8
+call.type$ -- 2
+change.case$ -- 8
+chr.to.int$ -- 0
+cite$ -- 3
+duplicate$ -- 39
+empty$ -- 70
+format.name$ -- 4
+if$ -- 162
+int.to.chr$ -- 0
+int.to.str$ -- 2
+missing$ -- 2
+newline$ -- 13
+num.names$ -- 4
+pop$ -- 14
+preamble$ -- 1
+purify$ -- 6
+quote$ -- 0
+skip$ -- 24
+stack$ -- 0
+substring$ -- 42
+swap$ -- 11
+text.length$ -- 1
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 8
+warning$ -- 1
+while$ -- 7
+width$ -- 3
+write$ -- 25
+(There was 1 warning)

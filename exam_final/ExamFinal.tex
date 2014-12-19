@@ -7,7 +7,14 @@
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{bbm}
-
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage[numbers,sort]{natbib}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\usepackage{footmisc}
 \newlength\tindent
 \setlength{\tindent}{\parindent}
 \setlength{\parindent}{0pt}
@@ -87,18 +94,23 @@ Since, in this case, both $\theta_i$ are the means of exponential random variabl
 Basically, this is the rest of the example 1.49.
 
 \subsection*{c}
+
 As stated in example 1.50 of the book, if the function $f_j(\theta_j, U) = \mathbbm{1}{[T > x]}$, the estimator can only take
 two values, 0 and 1. Its derivative is either undefined, when the
 function jumps exactly at $\theta_j$ or is 0. It cannot be an unbiased estimator of the derivative because the original function is discontinuous at some point as a function of $\theta_j$.
 
 \subsection*{d}
-% example 6.21
-First thing, we need to condition on all activities except the ones depending on $\theta_2$ and $\theta_4$.
+% estimate
+% dP[T>X] / d\theta_i
+%CMC example 6.21
 
+The process is explained in \citep{fu_gradient_2006}, beginning of p.17.
 
+First thing, we need to condition on all activities except the ones depending on $\theta_2$ and $\theta_4$. Then we proceed using equation (14) of \citep{fu_sensitivity_2006} for both $\theta_2$ and $\theta_4$.
 
-% the equation for P[T > x]
-The value of the equation is $\mathbbm{P}[T>x] = 1 - \prod \limits{l \in L} F_l[x - \alpha_l - \beta_l]$
+Further details are given in section 3 of \citep{fu_sensitivity_2006}.
+
+I don't know how to formally prove it, but informally, we need to prove that the derivative of the cumulative functions of the activities (which are exponentials in this particular case) are continuous, unlike the indicator function.
 
 \subsection*{e}
 % p.117 for gradient computation code
@@ -106,16 +118,46 @@ The value of the equation is $\mathbbm{P}[T>x] = 1 - \prod \limits{l \in L} F_l[
 % the term is infinitesimal perturbation analysis (IPA)  + stochastic activity network (SAN) on google for more details
 
 % also SAN_GRADIENT p.15
+Sadly, I didn't have enough time to implement the algorithm.
+
 
 \subsection*{f}
 
+% dP[T <= x] / dx
+% derivative of the cdf of the system
+
+%Application of PA to the problem of estimating dP (Y > θ)/dθ also requires SPA, the idea being to
+%condition on all activity times except a special (minimal) set that includes at least one activity that must be
+%on the optimal (critical) path. Taking any minimal cut set, one can derive an unbiased derivative estimator
+%for P (Y > θ) by conditioning on the complement set and then taking the sample path derivative. The details
+%are contained in Fu (2005).
+
+This is the same as in \citep{fu_sensitivity_2006}, p. 361. Basically, this is the problem of estimating 
+$$\dfrac{\delta P(Y > \theta)}{\delta \theta}$$
+
+We first condition on a set of activity times s.t. the set and its complement have non-zero probability of having an activity on the critical path (that is by obtaining a minimal cut set, as in the class notes).
+
+We then condition on the complement set of activity times and take the sample path derivative \citep{fu_sensitivity_2006}.
+
+The choice of cut set is not trivial.
+
+To give an example of why multiple values of threshold can be calculated at the same time, I refer to the example (i) of p.362 \citep{fu_sensitivity_2006}. Clearly, the value of $\theta$ can be substituted for all the other desired thresholds. This allows us, for each state of the system, to query all the desired values of $\theta$ in parallel without the need of generating more pseudo-random variables.
+
+
+Sadly, I didn't have enough time to implement the algorithm.
 
 \subsection*{g}
+Sadly, I didn't have enough time to implement the algorithm.
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PART 2
 \section*{2}
 
+
+
 \subsection*{a}
+
+The algorithm was implemented in AsianVG.java.
 
 The point sets (PS) are in corresponding order: Sob + S, Sob + LMS + S, Kor + S, Kor + S + B
 
@@ -151,6 +193,8 @@ For the Korobov lattice, Kor+S matches very well the expected results while Kor+
 I think the cause of this is perhaps an error in the calculation of the variance reduction factor, or otherwise the variation is too important.
 
 The important point is that we reach the same observation that DGBS usually yields superior reduction of variance.
+
+
 
 
 \subsection*{b}
@@ -196,9 +240,40 @@ $$
 
 We must simply apply these to the Gamma processes (substituting for the real parameters).
 
+
+
 \subsection*{c}
 
+The algorithm was implemented in AsianVG1.java.
+
+Since I couldn't find the relation between $\mathbbm{E}[G^+(1) - G^-(1)]$ and $\theta$, this one isn't working.
+
+What I got is that I know the $\mathbbm{E}[G^+(1) - G^-(1)]$ is equal to the variance gamma $\theta_{VG}$ parameter (by definition). But I can't seem to figure it out going back from the new $\lambda^* = \lambda \pm \theta$ because both terms of the gamma distributions should be related to the original value of $\theta_{VG}$, I mean both the $\mu$ and $\nu$ terms are related to it so I don't see how to do it this way.
+
+Otherwise, I could probably try to use the relation suggested here \url{http://stats.stackexchange.com/questions/48378/difference-of-gamma-random-variables}, but I'm not sure how to proceed.
+
+Since the next many questions depend on it, well, you got me good.
 
 \subsection*{d}
+
+Yeah, hard to compare with c) on that one.
+
 \subsection*{e}
+
+The algorithm was implemented as AsianVGTronquee.java.
+
+As I wasn't able to derive the formula relating the average difference of gamma to the added $\theta$ term, it's pretty hard to compare. However, the code does yield a value similar to the one expected when simulating with BGSS for K=140 and 180, so I guess it isn't so bad.
+
+
+\subsection*{f}
+
+Sadly, I didn't have enough time to implement the algorithm.
+
+
+\bibliographystyle{plain}
+
+\bibliography{ExamFinal}
+
 \end{document}
+
+
