@@ -1,3 +1,4 @@
+package ExamFinal;
 import java.io.IOException;
 
 import umontreal.iro.lecuyer.probdist.NormalDist;
@@ -10,6 +11,12 @@ import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
 
+
+/**
+ * question 1A
+ * @author gab
+ *
+ */
 public class San13CMC_CV extends San13CMC {
 
 	TallyStore[] Ys;  // tallies to save control variates

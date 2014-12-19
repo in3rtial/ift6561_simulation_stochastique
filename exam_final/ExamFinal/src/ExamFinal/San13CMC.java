@@ -1,3 +1,4 @@
+package ExamFinal;
 
 import java.io.*;
 import umontreal.iro.lecuyer.rng.*;

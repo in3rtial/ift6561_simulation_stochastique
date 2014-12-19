@@ -1,3 +1,4 @@
+package ExamFinal;
 import umontreal.iro.lecuyer.rng.RandomStream;
 import umontreal.iro.lecuyer.stat.Tally;
 import umontreal.iro.lecuyer.util.Chrono;

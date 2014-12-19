@@ -1,3 +1,4 @@
+package ExamFinal;
 import umontreal.iro.lecuyer.rng.*;
 
 /**
