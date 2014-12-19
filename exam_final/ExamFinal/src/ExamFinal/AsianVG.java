@@ -173,27 +173,28 @@ public class AsianVG {
 		double theta = -0.1436; // drift BM
 		double sigma = 0.12136; // volatility of BM
 		double nu = 0.3; // variance rate of gamma time change
-		double K = 101; // K
+		double K = 150; // K
 		double s0 = 100; // s0
 		int T = 1;
 		MRG32k3a prng = new MRG32k3a();
 
 		// E[X(t)] = theta*t
-		int s = 16;
+		int s = 1;
 		double[] zeta = new double[s + 1];
 		zeta[0] = 0.0;
 		for (int j = 1; j <= s; j++)
 			zeta[j] = ((double) j / (double) s) * (double) T;
-		
+		System.out.println((Math.sqrt(theta*theta + ((2*sigma*sigma)/nu)) + theta)/2.);
 		AsianVG process = new AsianVG(r, sigma, theta, nu, K, s0, s, zeta);
 		
+		/*
 		process.BGSS(10000, prng, stats1, true);
 		System.out.println(stats1.report());
 		
 		process.BGBS(10000, prng, stats2, true);
 		System.out.println(stats2.report());
-		
-		process.DGBS(10000, prng, stats3, true);
+		*/
+		process.DGBS(100000, prng, stats3, true);
 		System.out.println(stats3.report());
 	}
 

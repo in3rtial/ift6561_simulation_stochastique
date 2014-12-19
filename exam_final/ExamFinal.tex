@@ -117,11 +117,88 @@ The value of the equation is $\mathbbm{P}[T>x] = 1 - \prod \limits{l \in L} F_l[
 
 \subsection*{a}
 
+The point sets (PS) are in corresponding order: Sob + S, Sob + LMS + S, Kor + S, Kor + S + B
+
+PS1 BGSS : 25
+
+PS1 BGBS :  57
+
+PS1 DGBS :  297
+
+PS2 BGSS :  12
+
+PS2 BGBS :  77
+
+PS2 DGBS :  561
+
+PS3 BGSS :  10
+
+PS3 BGBS :  18
+
+PS3 DGBS :  116
+
+PS4 BGSS :  12
+
+PS4 BGBS :  127
+
+PS4 DGBS :  118
+
+
+The results for Sob+S are lower than expected, especially for the bridge sampling, but the results for Sob + LMS + S match quite well with table 6.12.
+
+For the Korobov lattice, Kor+S matches very well the expected results while Kor+S+B yields much greater variance reduction factor.
+
+I think the cause of this is perhaps an error in the calculation of the variance reduction factor, or otherwise the variation is too important.
+
+The important point is that we reach the same observation that DGBS usually yields superior reduction of variance.
+
 
 \subsection*{b}
 % the answer is in VG pdf and book p.499
+% http://wenku.baidu.com/view/4d8ce227ccbff121dd368328.html
+% Credit Securitisations and Derivatives: Challenges for the Global Markets p.117
+
+% original pdf
+$$
+\pi(x) = \dfrac{\lambda^\alpha x^{\alpha -1} \exp{(- \lambda x)}}{\Gamma(\alpha)}
+$$
+
+% exponentially twisted pdf definition
+$$
+\pi_{\theta}(x) = \dfrac{\exp{(\theta x)} \pi(x)}{\mathbbm{M}(\theta)}
+$$
+where M is the mgf of the Gamma distribution. The exponentially twisted pdf is then
+
+$$
+\pi_{\theta}(x) =
+\dfrac{\exp(\theta x)}{(1 - \frac{\theta}{\lambda})^{-\alpha}}
+\dfrac{\lambda^\alpha x^{\alpha -1} \exp(- \lambda x)}{\Gamma(\alpha)}
+$$
+
+this yields the following new densities
+
+$$
+\pi_{\theta}(x) = \dfrac{\exp(- (\lambda - \theta)) x^{\alpha - 1}}{\Gamma(\alpha) (\lambda - \theta)^{-\alpha}}
+$$
+
+We can generate pseudo-random variable by sampling from the new distributions $Gamma(\alpha, \lambda - \theta)$, since only the scale parameter was changed. 
+
+\vspace{1 cm}
+The likelihood ratio to multiply by will be the product of the individual likelihoods:
+
+$$
+L(x) = \exp( -\theta x + \alpha(\ln(\frac{\lambda}{\lambda - \theta}))
+$$
+
+$$
+	L(\omega) = L(x_1) * L(x_2) 
+$$
+
+We must simply apply these to the Gamma processes (substituting for the real parameters).
 
 \subsection*{c}
+
+
 \subsection*{d}
 \subsection*{e}
 \end{document}

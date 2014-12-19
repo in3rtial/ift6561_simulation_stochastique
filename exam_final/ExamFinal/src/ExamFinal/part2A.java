@@ -61,13 +61,15 @@ public class part2A {
 		// strategy 3
 		// Korobov lattice rules with a random shift modulo 1 (Kor-S)
 		KorobovLattice PS3 = new KorobovLattice(16381, 5693, s * 2);
-
+		PS3.addRandomShift(prng);
 		// strategy 4
 		// Korobov lattice rules with a random shift modulo 1 followed by a
 		// baker transformation (Kor-S-B)
-		BakerTransformedPointSet PS4 = new BakerTransformedPointSet(PS3);
-		PS4.addRandomShift(prng);
-		PS3.addRandomShift(prng);
+		KorobovLattice tmp = new KorobovLattice(16381, 5693, s * 2);
+		tmp.addRandomShift(prng);
+		BakerTransformedPointSet PS4 = new BakerTransformedPointSet(tmp);
+
+
 
 		// get the stats for the different point sets
 		PointSet[] PS = new PointSet[] { PS1, PS2, PS3, PS4 };
@@ -80,28 +82,31 @@ public class part2A {
 					// BGSS
 					Tallies[i][j] = new Tally("PS" + (i + 1) + " BGSS");
 					process.BGSS_RQMC(m, PS[i], prng, Tallies[i][j]);
-					System.out.println(Tallies[i][j].report());
+					//System.out.println(Tallies[i][j].report());
 					double varQMC = PS[i].getNumPoints()
 							* Tallies[i][j].variance();
-					System.out.println("Variance ratio = " + varMC / varQMC
+					System.out.println(Tallies[i][j].getName()+"\n");
+					System.out.println("Variance ratio = " + varMC / (varQMC*m)
 							+ "\n\n#############################\n");
 				} else if (j == 1) {
 					// BGBS
 					Tallies[i][j] = new Tally("PS" + (i + 1) + " BGBS");
 					process.BGBS_RQMC(m, PS[i], prng, Tallies[i][j]);
-					System.out.println(Tallies[i][j].report());
+					//System.out.println(Tallies[i][j].report());
 					double varQMC = PS[i].getNumPoints()
 							* Tallies[i][j].variance();
-					System.out.println("Variance ratio = " + varMC / varQMC
+					System.out.println(Tallies[i][j].getName()+"\n");
+					System.out.println("Variance ratio = " + varMC / (varQMC*m)
 							+ "\n\n#############################\n");
 				} else {
 					// DGBS
 					Tallies[i][j] = new Tally("PS" + (i + 1) + " DGBS");
 					process.DGBS_RQMC(m, PS[i], prng, Tallies[i][j]);
-					System.out.println(Tallies[i][j].report());
+					//System.out.println(Tallies[i][j].report());
 					double varQMC = PS[i].getNumPoints()
 							* Tallies[i][j].variance();
-					System.out.println("Variance ratio = " + varMC / varQMC
+					System.out.println(Tallies[i][j].getName()+"\n");
+					System.out.println("Variance ratio = " + varMC / (varQMC*m)
 							+ "\n\n#############################\n");
 				}
 			}
